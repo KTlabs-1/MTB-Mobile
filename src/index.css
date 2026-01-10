@@ -1,0 +1,70 @@
+/* Google Fonts - Bebas Neue for headings, Poppins for body */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Tailwind base layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-brand-black text-white font-body antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-wide;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  /* Primary button style */
+  .btn-primary {
+    @apply bg-brand-red text-white font-semibold py-3 px-8 
+           rounded-sm uppercase tracking-wider
+           transition-all duration-300 ease-out
+           hover:bg-brand-red-dark hover:scale-105
+           active:scale-100;
+  }
+  
+  /* Secondary/outline button */
+  .btn-secondary {
+    @apply border-2 border-white text-white font-semibold py-3 px-8 
+           rounded-sm uppercase tracking-wider
+           transition-all duration-300 ease-out
+           hover:bg-white hover:text-brand-black;
+  }
+  
+  /* Section container for consistent padding */
+  .section-container {
+    @apply max-w-7xl mx-auto px-6 md:px-8 lg:px-12;
+  }
+  
+  /* Gradient overlay for images */
+  .gradient-overlay {
+    @apply absolute inset-0 bg-gradient-to-t from-brand-black via-brand-black/50 to-transparent;
+  }
+}
+
+/* Custom utilities */
+@layer utilities {
+  /* Text shadow for readability over images */
+  .text-shadow {
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  }
+  
+  /* Red underline accent */
+  .underline-accent {
+    @apply relative;
+  }
+  
+  .underline-accent::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-16 h-1 bg-brand-red;
+  }
+}
