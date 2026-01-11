@@ -17,10 +17,10 @@ module.exports = {
           gold: '#F59E0B',       // Accent for highlights
         }
       },
-      // Custom fonts - Bebas Neue for headings, Poppins for body
+      // Custom fonts - Urbanist for headings and body
       fontFamily: {
-        heading: ['Bebas Neue', 'sans-serif'],
-        body: ['Poppins', 'sans-serif'],
+        heading: ['Urbanist', 'sans-serif'],
+        body: ['Urbanist', 'sans-serif'],
       },
       // Custom spacing for consistent layouts
       spacing: {

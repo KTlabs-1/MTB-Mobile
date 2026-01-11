@@ -15,7 +15,7 @@ const LandingPage = () => {
   return (
     <main>
       {/* ==================== HERO SECTION ==================== */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[600px] md:min-h-[700px] flex items-center justify-center overflow-hidden">
         {/* Background - dark gradient with subtle texture */}
         <div className="absolute inset-0 bg-gradient-to-br from-brand-black via-brand-dark to-brand-black" />
         
@@ -23,7 +23,7 @@ const LandingPage = () => {
         <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-brand-red via-brand-red/50 to-transparent" />
         
         {/* Hero Content */}
-        <div className="relative z-10 section-container text-center py-20">
+        <div className="relative z-10 section-container text-center pt-4 pb-20 md:py-20">
           <div className="max-w-4xl mx-auto">
             {/* Tagline */}
             <p className="text-brand-red uppercase tracking-[0.3em] text-sm md:text-base font-medium mb-6 animate-fade-in">
