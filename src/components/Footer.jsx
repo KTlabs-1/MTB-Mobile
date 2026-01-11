@@ -119,12 +119,9 @@ const Footer = () => {
 
         {/* Copyright Bar */}
         <div className="mt-12 pt-8 border-t border-white/10">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col md:flex-row justify-center items-center gap-4">
             <p className="text-gray-500 text-xs">
               © {currentYear} The Hood Barber. All rights reserved.
-            </p>
-            <p className="text-gray-600 text-xs">
-              Powered by MTB Cutz
             </p>
           </div>
         </div>

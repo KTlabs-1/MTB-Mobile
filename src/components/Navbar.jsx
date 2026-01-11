@@ -27,28 +27,30 @@ const Navbar = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-md border-b border-white/5">
       <div className="section-container">
         <div className="flex items-center justify-between h-20">
-          
-          {/* Logo / Brand Name */}
-          <Link to="/" className="flex items-center gap-2">
+
+          {/* Logo / Brand Name - Left */}
+          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
             <span className="font-heading text-3xl text-white tracking-wider">
               THE HOOD<span className="text-brand-red">BARBER</span>
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          {/* Desktop Navigation Links - Center */}
+          <div className="hidden md:flex items-center gap-8 absolute left-1/2 -translate-x-1/2">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
-                className="text-gray-300 hover:text-white transition-colors duration-200 
+                className="text-gray-300 hover:text-white transition-colors duration-200
                            font-medium tracking-wide text-sm uppercase"
               >
                 {link.name}
               </Link>
             ))}
-            
-            {/* CTA Button */}
+          </div>
+
+          {/* CTA Button - Right */}
+          <div className="hidden md:block">
             <Link to="/book" className="btn-primary">
               Book Now
             </Link>
@@ -61,12 +63,10 @@ const Navbar = () => {
             aria-label="Toggle menu"
           >
             {isMenuOpen ? (
-              // Close icon (X)
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
-              // Hamburger icon
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
