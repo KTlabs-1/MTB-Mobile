@@ -24,15 +24,13 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-md border-b border-white/5">
+    <nav className="px-4 pb-4 sticky top-0 left-0 w-full z-50 bg-black/30 backdrop-blur-md">
       <div className="section-container">
         <div className="flex items-center justify-between h-20">
 
           {/* Logo / Brand Name - Left */}
-          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <span className="font-heading text-3xl text-white tracking-wider">
-              THE HOOD<span className="text-brand-red">BARBER</span>
-            </span>
+          <Link to="/" className="flex items-center">
+            <span className="text-white font-extrabold text-2xl tracking-tight">MTB<span className="text-brand-red">CUTZ</span></span>
           </Link>
 
           {/* Desktop Navigation Links - Center */}

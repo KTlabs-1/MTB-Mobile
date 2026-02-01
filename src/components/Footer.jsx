@@ -28,9 +28,9 @@ const Footer = () => {
           
           {/* Brand Section */}
           <div>
-            <h3 className="font-heading text-2xl text-white tracking-wider mb-4">
-              THE HOOD<span className="text-brand-red">BARBER</span>
-            </h3>
+            <div className="flex items-center mb-4">
+              <span className="text-white font-extrabold text-2xl tracking-tight">MTB<span className="text-brand-red">CUTZ</span></span>
+            </div>
             <p className="text-gray-400 text-sm leading-relaxed mb-4">
               Premium mobile barbering services across Ireland. 
               We bring the fresh cuts to your door.
@@ -100,18 +100,6 @@ const Footer = () => {
                   </svg>
                 </a>
                 
-                {/* TikTok - placeholder */}
-                <a
-                  href="#"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-brand-red transition-colors duration-200"
-                  aria-label="TikTok"
-                >
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
-                  </svg>
-                </a>
               </div>
             </div>
           </div>

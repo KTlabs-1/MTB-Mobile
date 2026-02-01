@@ -1,7 +1,12 @@
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
+import SignIn from './pages/SignIn';
+import SignUp from './pages/SignUp';
+import ServicesPage from './pages/ServicesPage';
+import Loader from './components/Loader';
 
 /**
  * Main App Component
@@ -14,23 +19,29 @@ import LandingPage from './pages/LandingPage';
  * As we build more pages, we'll add them to the Routes section.
  */
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+
   return (
     <Router>
+      {isLoading && <Loader onLoadingComplete={() => setIsLoading(false)} />}
       <div className="min-h-screen bg-brand-black flex flex-col">
         {/* Navigation - always visible */}
         <Navbar />
         
         {/* Main content area - grows to fill space */}
-        <div className="flex-grow pt-20">
+        <div className="flex-grow">
           <Routes>
             {/* Landing/Home Page */}
             <Route path="/" element={<LandingPage />} />
             
             {/* Placeholder routes - we'll build these pages next */}
-            <Route path="/services" element={<PlaceholderPage title="Services" />} />
+            <Route path="/services" element={<ServicesPage />} />
             <Route path="/book" element={<PlaceholderPage title="Book Now" />} />
             <Route path="/about" element={<PlaceholderPage title="About" />} />
             <Route path="/contact" element={<PlaceholderPage title="Contact" />} />
+            <Route path="/signin" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/forgot-password" element={<PlaceholderPage title="Forgot Password" />} />
           </Routes>
         </div>
         

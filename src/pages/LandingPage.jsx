@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import bannerImage from '../assets/images/Bannar1.jpg';
 
 /**
  * Landing Page (Home)
@@ -15,15 +16,18 @@ const LandingPage = () => {
   return (
     <main>
       {/* ==================== HERO SECTION ==================== */}
-      <section className="relative min-h-[600px] md:min-h-[700px] flex items-center justify-center overflow-hidden">
-        {/* Background - dark gradient with subtle texture */}
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-black via-brand-dark to-brand-black" />
-        
-        {/* Decorative red accent line */}
-        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-brand-red via-brand-red/50 to-transparent" />
-        
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{ backgroundImage: `url(${bannerImage})` }}
+        />
+
+        {/* Dark Overlay */}
+        <div className="absolute inset-0 bg-black/60" />
+
         {/* Hero Content */}
-        <div className="relative z-10 section-container text-center pt-4 pb-20 md:py-20">
+        <div className="relative z-10 section-container text-center py-20">
           <div className="max-w-4xl mx-auto">
             {/* Tagline */}
             <p className="text-brand-red uppercase tracking-[0.3em] text-sm md:text-base font-medium mb-6 animate-fade-in">
@@ -96,7 +100,7 @@ const LandingPage = () => {
                               flex items-center justify-center group-hover:bg-brand-red/20 transition-colors duration-300">
                 <span className="font-heading text-3xl text-brand-red">2</span>
               </div>
-              <h3 className="font-heading text-2xl text-white mb-3">WE COME TO YOU</h3>
+              <h3 className="font-heading text-2xl text-white mb-3">WELCOME TO YOU</h3>
               <p className="text-gray-400 text-sm leading-relaxed">
                 On the day, your barber arrives at your door — fully equipped and ready to deliver.
                 Home, office, or event — we've got you.
