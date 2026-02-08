@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
@@ -9,6 +9,42 @@ import ServicesPage from './pages/ServicesPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import Loader from './components/Loader';
+import { useEffect } from 'react';
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+}
+
+function ScrollToTopButton() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setVisible(window.scrollY > 400);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <button
+      onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+      className="fixed bottom-6 right-6 z-50 w-10 h-10 bg-brand-red rounded-full
+                 flex items-center justify-center shadow-lg
+                 hover:bg-brand-red-dark transition-all duration-300
+                 animate-fade-in"
+      aria-label="Scroll to top"
+    >
+      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+      </svg>
+    </button>
+  );
+}
 
 /**
  * Main App Component
@@ -25,6 +61,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollToTop />
       {isLoading && <Loader onLoadingComplete={() => setIsLoading(false)} />}
       <div className="min-h-screen bg-brand-black flex flex-col">
         {/* Navigation - always visible */}
@@ -50,6 +87,7 @@ function App() {
         
         {/* Footer - always visible */}
         <Footer />
+        <ScrollToTopButton />
       </div>
     </Router>
   );

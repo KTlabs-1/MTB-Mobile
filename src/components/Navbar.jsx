@@ -29,7 +29,7 @@ const Navbar = () => {
         <div className="flex items-center justify-between h-20">
 
           {/* Logo / Brand Name - Left */}
-          <Link to="/" className="flex items-center">
+          <Link to="/" onClick={() => window.scrollTo(0, 0)} className="flex items-center">
             <span className="text-white font-extrabold text-2xl tracking-tight">MTB<span className="text-brand-red">CUTZ</span></span>
           </Link>
 
@@ -39,6 +39,7 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.path}
+                onClick={() => window.scrollTo(0, 0)}
                 className="text-gray-300 hover:text-white transition-colors duration-200
                            font-medium tracking-wide text-sm uppercase"
               >
@@ -80,8 +81,8 @@ const Navbar = () => {
                 <Link
                   key={link.name}
                   to={link.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className="text-gray-300 hover:text-white transition-colors duration-200 
+                  onClick={() => { setIsMenuOpen(false); window.scrollTo(0, 0); }}
+                  className="text-gray-300 hover:text-white transition-colors duration-200
                              font-medium tracking-wide text-sm uppercase py-2"
                 >
                   {link.name}
