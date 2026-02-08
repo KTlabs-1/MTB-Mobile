@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import bannerImage from '../assets/images/Bannar1.jpg';
+import CoverageMap from '../components/CoverageMap';
 
 /**
  * Landing Page (Home)
@@ -209,21 +210,12 @@ const LandingPage = () => {
               </p>
             </div>
 
-            {/* Visual Element - Placeholder for map or image */}
+            {/* Coverage Map */}
             <div className="relative">
-              <div className="aspect-square bg-brand-surface rounded-sm border border-white/5 
-                              flex items-center justify-center">
-                {/* Placeholder - replace with actual map or image */}
-                <div className="text-center p-8">
-                  <svg className="w-16 h-16 mx-auto text-brand-red/50 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  <p className="text-gray-500 text-sm">Coverage Map</p>
-                  <p className="text-gray-600 text-xs mt-2">Image placeholder</p>
-                </div>
+              <div className="aspect-square rounded-sm overflow-hidden border border-white/5">
+                <CoverageMap />
               </div>
-              
+
               {/* Decorative corner accent */}
               <div className="absolute -bottom-4 -right-4 w-24 h-24 border-r-2 border-b-2 border-brand-red/30" />
             </div>

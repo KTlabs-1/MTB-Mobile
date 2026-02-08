@@ -19,6 +19,14 @@ const ServicesPage = () => {
   // Barber Services
   const barberServices = [
     {
+      id: 'vip-trimmer',
+      name: 'VIP Trimmer',
+      price: '€100',
+      duration: '1hr 15min',
+      description: 'The ultimate grooming experience',
+      isVip: true
+    },
+    {
       id: 'adult-haircut',
       name: 'Adult Haircut (18+)',
       price: '€30',
@@ -243,9 +251,17 @@ const ServicesPage = () => {
               <Link
                 key={service.id}
                 to={`/book?service=${service.id}`}
-                className="bg-brand-surface border border-white/5 rounded-sm p-6 transition-all duration-300
-                           hover:border-brand-red/50 hover:bg-brand-surface/80 group"
+                className={`relative bg-brand-surface border rounded-sm p-6 transition-all duration-300
+                           hover:border-brand-red/50 hover:bg-brand-surface/80 group
+                           ${service.isVip ? 'border-brand-red/30' : 'border-white/5'}`}
               >
+                {/* VIP Badge */}
+                {service.isVip && (
+                  <div className="absolute -top-3 right-6 bg-brand-red px-3 py-1 rounded-sm">
+                    <span className="text-white text-xs font-semibold uppercase tracking-wider">VIP</span>
+                  </div>
+                )}
+
                 {/* Service Name */}
                 <h3 className="font-heading text-xl text-white mb-2 group-hover:text-brand-red transition-colors">
                   {service.name}
@@ -270,8 +286,140 @@ const ServicesPage = () => {
         </div>
       </section>
 
-      {/* ==================== HOW PAYMENT WORKS ==================== */}
+      {/* ==================== PREMIUM SERVICES SECTION ==================== */}
       <section className="py-20 md:py-28 bg-brand-black">
+        <div className="section-container">
+          {/* Section Header */}
+          <div className="text-center mb-16">
+            <h2 className="font-heading text-4xl md:text-5xl text-white mb-4">
+              PREMIUM <span className="text-brand-red">SERVICES</span>
+            </h2>
+            <p className="text-gray-400 max-w-xl mx-auto">
+              Exclusive experiences tailored to your needs
+            </p>
+          </div>
+
+          {/* Cards Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            {/* VIP TRIMMER CARD */}
+            <div className="bg-brand-surface border border-brand-red/30 rounded-sm p-8 flex flex-col
+                            transition-all duration-300 hover:border-brand-red/50">
+              {/* VIP Badge */}
+              <div className="mb-6">
+                <span className="bg-brand-red px-3 py-1 rounded-sm text-white text-xs font-semibold uppercase tracking-wider">
+                  VIP
+                </span>
+              </div>
+
+              {/* Title & Description */}
+              <h3 className="font-heading text-2xl md:text-3xl text-white mb-3">
+                VIP Trimmer
+              </h3>
+              <p className="text-gray-400 text-sm mb-6">
+                The ultimate grooming experience. Full service, full relaxation.
+              </p>
+
+              {/* Price */}
+              <div className="mb-6">
+                <span className="font-heading text-4xl md:text-5xl text-brand-red">€100</span>
+                <p className="text-gray-500 text-sm mt-1">€50 deposit • 1hr 15min</p>
+              </div>
+
+              {/* What's Included */}
+              <div className="mb-8 flex-grow">
+                <ul className="space-y-2">
+                  {[
+                    'Precision haircut',
+                    'Hair wash',
+                    'Face scrub',
+                    'Ear waxing',
+                    'Nose cleaning',
+                    'Relaxing massage',
+                    'Steamer treatment',
+                    'Styling'
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-center gap-3">
+                      <svg className="w-4 h-4 text-brand-red flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-gray-300 text-sm">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Book Button */}
+              <Link
+                to="/book?service=vip-trimmer"
+                className="block w-full text-center bg-brand-red text-white py-4 rounded-sm
+                           font-semibold uppercase tracking-wider transition-all duration-300
+                           hover:bg-brand-red-dark"
+              >
+                Book VIP Experience
+              </Link>
+            </div>
+
+            {/* CARE HOME SERVICES CARD */}
+            <div className="bg-brand-surface border border-white/10 rounded-sm p-8 flex flex-col
+                            transition-all duration-300 hover:border-white/30">
+              {/* Special Badge */}
+              <div className="mb-6">
+                <span className="bg-white px-3 py-1 rounded-sm text-brand-black text-xs font-semibold uppercase tracking-wider">
+                  Special
+                </span>
+              </div>
+
+              {/* Title & Description */}
+              <h3 className="font-heading text-2xl md:text-3xl text-white mb-3">
+                Care Home Services
+              </h3>
+              <p className="text-gray-400 text-sm mb-6">
+                Dedicated barbering for care homes and individuals with disabilities.
+                Professional grooming in a comfortable, familiar environment.
+              </p>
+
+              {/* Price */}
+              <div className="mb-6">
+                <span className="font-heading text-4xl md:text-5xl text-brand-red">Custom Pricing</span>
+                <p className="text-gray-500 text-sm mt-1">Tailored to your needs</p>
+              </div>
+
+              {/* What's Included */}
+              <div className="mb-8 flex-grow">
+                <ul className="space-y-2">
+                  {[
+                    'Home visits',
+                    'Flexible scheduling',
+                    'Patient & caring service',
+                    'All barber services available',
+                    'Group bookings welcome'
+                  ].map((item, index) => (
+                    <li key={index} className="flex items-center gap-3">
+                      <svg className="w-4 h-4 text-brand-red flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-gray-300 text-sm">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Contact Button */}
+              <Link
+                to="/contact"
+                className="block w-full text-center border-2 border-white text-white py-4 rounded-sm
+                           font-semibold uppercase tracking-wider transition-all duration-300
+                           hover:bg-white hover:text-brand-black"
+              >
+                Get In Touch
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ==================== HOW PAYMENT WORKS ==================== */}
+      <section className="py-20 md:py-28 bg-brand-dark">
         <div className="section-container">
           <div className="max-w-4xl mx-auto">
             {/* Section Header */}
@@ -343,53 +491,6 @@ const ServicesPage = () => {
                   </p>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ==================== SPECIAL SERVICES ==================== */}
-      <section className="py-20 md:py-28 bg-brand-dark">
-        <div className="section-container">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
-            {/* Image */}
-            <div className="relative order-2 lg:order-1">
-              <div
-                className="aspect-[4/3] bg-cover bg-center bg-no-repeat rounded-sm"
-                style={{ backgroundImage: `url(${bannerImage})` }}
-              />
-              {/* Decorative corner accent */}
-              <div className="absolute -bottom-4 -left-4 w-24 h-24 border-l-2 border-b-2 border-brand-red/30" />
-            </div>
-
-            {/* Text Content */}
-            <div className="order-1 lg:order-2">
-              <p className="text-brand-red uppercase tracking-[0.3em] text-sm font-medium mb-4">
-                Special Services
-              </p>
-              <h2 className="font-heading text-4xl md:text-5xl text-white mb-6">
-                CARE HOME <span className="text-brand-red">SERVICES</span>
-              </h2>
-              <p className="text-gray-400 mb-6 leading-relaxed">
-                We offer dedicated barbering services for care homes and individuals with disabilities.
-                Our barber comes equipped to provide comfortable, professional grooming in a familiar environment.
-              </p>
-              <p className="text-gray-400 mb-8 leading-relaxed">
-                Pricing is customised based on your specific needs and requirements.
-                Get in touch to discuss how we can help.
-              </p>
-
-              {/* Contact CTA */}
-              <Link
-                to="/contact"
-                className="inline-flex items-center gap-2 text-brand-red hover:text-brand-red-light
-                           transition-colors font-medium uppercase tracking-wider text-sm"
-              >
-                Contact for Custom Pricing
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </Link>
             </div>
           </div>
         </div>

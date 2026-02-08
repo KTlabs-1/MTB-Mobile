@@ -243,14 +243,7 @@ const SignUp = () => {
                   </svg>
                 </div>
                 <span className="text-xs sm:text-sm text-gray-400 group-hover:text-gray-300 transition-colors leading-relaxed">
-                  I agree to the{' '}
-                  <Link to="/terms" className="text-brand-red hover:text-brand-red-light transition-colors">
-                    Terms of Service
-                  </Link>{' '}
-                  and{' '}
-                  <Link to="/privacy" className="text-brand-red hover:text-brand-red-light transition-colors">
-                    Privacy Policy
-                  </Link>
+                  I agree to the Terms and Privacy Policy
                 </span>
               </label>
             </div>

@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import LandingPage from './pages/LandingPage';
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 import ServicesPage from './pages/ServicesPage';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
 import Loader from './components/Loader';
 
 /**
@@ -37,11 +39,12 @@ function App() {
             {/* Placeholder routes - we'll build these pages next */}
             <Route path="/services" element={<ServicesPage />} />
             <Route path="/book" element={<PlaceholderPage title="Book Now" />} />
-            <Route path="/about" element={<PlaceholderPage title="About" />} />
-            <Route path="/contact" element={<PlaceholderPage title="Contact" />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/contact" element={<ContactPage />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/forgot-password" element={<PlaceholderPage title="Forgot Password" />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
         
