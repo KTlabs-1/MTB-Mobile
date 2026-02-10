@@ -49,7 +49,7 @@ const LandingPage = () => {
             
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up" style={{ animationDelay: '0.2s' }}>
-              <Link to="/book" className="btn-primary text-lg">
+              <Link to="/services" className="btn-primary text-lg">
                 Book Your Cut
               </Link>
               <Link to="/services" className="btn-secondary text-lg">
@@ -238,7 +238,7 @@ const LandingPage = () => {
               Book your appointment now and experience premium barbering at your convenience. 
               We bring the skills — you bring the location.
             </p>
-            <Link to="/book" className="btn-primary text-lg px-12">
+            <Link to="/services" className="btn-primary text-lg px-12">
               Book Now
             </Link>
           </div>

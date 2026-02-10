@@ -295,7 +295,7 @@ const ContactPage = () => {
               Skip the back-and-forth. Book online in under 2 minutes and we'll see you at your door.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to="/book" className="btn-primary">
+              <Link to="/services" className="btn-primary">
                 Book Now
               </Link>
               <Link

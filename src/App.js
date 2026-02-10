@@ -8,6 +8,7 @@ import SignUp from './pages/SignUp';
 import ServicesPage from './pages/ServicesPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
+import BookingPage from './pages/BookingPage';
 import Loader from './components/Loader';
 import { useEffect } from 'react';
 
@@ -75,7 +76,7 @@ function App() {
             
             {/* Placeholder routes - we'll build these pages next */}
             <Route path="/services" element={<ServicesPage />} />
-            <Route path="/book" element={<PlaceholderPage title="Book Now" />} />
+            <Route path="/book" element={<BookingPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/signin" element={<SignIn />} />

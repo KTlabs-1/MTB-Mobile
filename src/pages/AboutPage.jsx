@@ -224,7 +224,7 @@ const AboutPage = () => {
             <h2 className="font-heading text-4xl md:text-5xl text-white mb-8">
               READY FOR A <span className="text-brand-red">FRESH CUT?</span>
             </h2>
-            <Link to="/book" className="btn-primary text-lg px-12">
+            <Link to="/services" className="btn-primary text-lg px-12">
               Book Now
             </Link>
           </div>

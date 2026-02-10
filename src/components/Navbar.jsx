@@ -50,7 +50,7 @@ const Navbar = () => {
 
           {/* CTA Button - Right */}
           <div className="hidden md:block">
-            <Link to="/book" className="btn-primary">
+            <Link to="/services" className="btn-primary">
               Book Now
             </Link>
           </div>
@@ -89,7 +89,7 @@ const Navbar = () => {
                 </Link>
               ))}
               <Link 
-                to="/book" 
+                to="/services"
                 onClick={() => setIsMenuOpen(false)}
                 className="btn-primary text-center mt-2"
               >
