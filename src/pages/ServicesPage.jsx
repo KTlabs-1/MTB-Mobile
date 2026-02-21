@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import api from '../services/api';
 import bannerImage from '../assets/images/Bannar1.jpg';
 
 /**
@@ -8,71 +9,116 @@ import bannerImage from '../assets/images/Bannar1.jpg';
  * Clean, minimal design following MTB branding.
  * Sections:
  * 1. Hero - Page title with background
- * 2. Main Services - Barber & Hairstylist tabs
- * 3. How Payment Works - Step by step
- * 4. Special Services - Care home services info
- * 5. Final CTA - Booking prompt
+ * 2. Location Banner - Shows current schedule
+ * 3. Main Services - Barber & Hairstylist tabs
+ * 4. Premium Services - VIP & Care Home
+ * 5. How Payment Works - Step by step
+ * 6. Final CTA - Booking prompt
  */
 const ServicesPage = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('barber');
+  const [schedules, setSchedules] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const result = await api.getAvailableWeeks();
+        if (result.success) {
+          setSchedules(result.schedules);
+        }
+      } catch (error) {
+        console.error('Error fetching schedules:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchSchedules();
+  }, []);
+
+  const formatWeekRange = (schedule) => {
+    const start = new Date(schedule.weekStart);
+    const end = new Date(schedule.weekEnd);
+    return `${start.toLocaleDateString('en-IE', { day: 'numeric', month: 'short' })} - ${end.toLocaleDateString('en-IE', { day: 'numeric', month: 'short' })}`;
+  };
+
+  const isThisWeek = (schedule) => {
+    const today = new Date();
+    const start = new Date(schedule.weekStart);
+    const end = new Date(schedule.weekEnd);
+    return today >= start && today <= end;
+  };
+
+  const handleServiceSelect = (serviceId) => {
+    navigate(`/book?service=${serviceId}`);
+  };
 
   // Barber Services
   const barberServices = [
     {
       id: 'vip-trimmer',
       name: 'VIP Trimmer',
-      price: '€100',
+      price: 100,
       duration: '1hr 15min',
+      deposit: 50,
       description: 'The ultimate grooming experience',
       isVip: true
     },
     {
       id: 'adult-haircut',
       name: 'Adult Haircut (18+)',
-      price: '€30',
+      price: 30,
       duration: '30 min',
+      deposit: 15,
       description: 'Classic cut tailored to your style'
     },
     {
       id: 'adult-haircut-beard',
       name: 'Adult Haircut + Beard Sculpt (18+)',
-      price: '€35',
+      price: 35,
       duration: '30 min',
+      deposit: 15,
       description: 'Full cut with beard sculpting'
     },
     {
-      id: 'teens-haircut',
+      id: 'teen-haircut',
       name: 'Teens Haircut (13-17)',
-      price: '€25',
+      price: 25,
       duration: '30 min',
+      deposit: 15,
       description: 'Fresh cuts for teens'
     },
     {
-      id: 'teens-haircut-beard',
+      id: 'teen-haircut-beard',
       name: 'Teens Haircut + Beard Sculpt (13-17)',
-      price: '€30',
+      price: 30,
       duration: '30 min',
+      deposit: 15,
       description: 'Teen cut with beard styling'
     },
     {
       id: 'kids-haircut',
       name: 'Kids Haircut',
-      price: '€20',
+      price: 20,
       duration: '30 min',
+      deposit: 15,
       description: 'For ages 12 and under'
     },
     {
       id: 'shape-up',
       name: 'Shape Up',
-      price: '€15',
+      price: 15,
       duration: '15 min',
+      deposit: 15,
       description: 'Clean up your edges and line'
     },
     {
-      id: 'beard-sculpting',
+      id: 'beard-sculpt',
       name: 'Beard Sculpting',
-      price: '€15',
+      price: 15,
       duration: '10 min',
+      deposit: 15,
       description: 'Precision beard trimming and shaping'
     }
   ];
@@ -82,99 +128,113 @@ const ServicesPage = () => {
     {
       id: 'barrel-twists',
       name: 'Barrel Twists',
-      price: '€50',
+      price: 50,
       duration: '2h',
+      deposit: 15,
       description: 'Stylish barrel twist look'
     },
     {
       id: 'loc-retwist',
       name: 'Loc Retwist',
-      price: '€60',
+      price: 60,
       duration: '1h',
+      deposit: 15,
       description: 'Maintain your locs with a fresh retwist'
     },
     {
       id: 'loc-retwist-style',
       name: 'Loc Retwist & Style',
-      price: '€75',
+      price: 75,
       duration: '2h',
+      deposit: 15,
       description: 'Retwist with styling included'
     },
     {
       id: 'starter-locs',
       name: 'Starter Locs (No Style)',
-      price: '€80',
+      price: 80,
       duration: '2h',
+      deposit: 15,
       description: 'Begin your loc journey'
     },
     {
       id: 'starter-locs-style',
       name: 'Starter Locs + Style',
-      price: '€100',
+      price: 100,
       duration: '2h 30min',
+      deposit: 50,
       description: 'Starter locs with styling'
     },
     {
       id: 'basic-twists',
       name: 'Basic Twists',
-      price: '€40',
+      price: 40,
       duration: '1h',
+      deposit: 15,
       description: 'Classic two-strand twists'
     },
     {
       id: 'off-white-twists',
       name: 'Off White Twists',
-      price: '€50',
+      price: 50,
       duration: '1h 30min',
+      deposit: 15,
       description: 'Trendy off-white twist style'
     },
     {
-      id: 'cornrows-twists-braids',
+      id: 'cornrows-to-twists',
       name: 'Cornrows into Twists/Braids',
-      price: '€50',
+      price: 50,
       duration: '1h 45min',
+      deposit: 15,
       description: 'Cornrow base with twist or braid ends'
     },
     {
       id: 'plug-twists',
       name: 'Plug Twists',
-      price: '€45',
+      price: 45,
       duration: '1h 45min',
+      deposit: 15,
       description: 'Plug-style twist look'
     },
     {
       id: 'basic-cornrows',
       name: 'Basic Cornrows',
-      price: '€30',
+      price: 30,
       duration: '30 min',
+      deposit: 15,
       description: 'Simple straight-back cornrows'
     },
     {
       id: 'stitch-cornrows',
       name: 'Stitch Cornrows',
-      price: '€35',
+      price: 35,
       duration: '45 min',
+      deposit: 15,
       description: 'Detailed stitch braiding'
     },
     {
-      id: 'minimum-design-cornrows',
+      id: 'design-cornrows',
       name: 'Minimum Design Cornrows',
-      price: '€40',
+      price: 40,
       duration: '45 min',
+      deposit: 15,
       description: 'Cornrows with simple design'
     },
     {
       id: 'premium-cornrows',
       name: 'Premium Cornrows',
-      price: '€50',
+      price: 50,
       duration: '1h',
+      deposit: 15,
       description: 'Complex patterns and designs'
     },
     {
       id: 'flat-twists',
       name: 'Flat Twists',
-      price: '€50',
+      price: 50,
       duration: '1h 45min',
+      deposit: 15,
       description: 'Sleek flat twist styling'
     }
   ];
@@ -207,6 +267,31 @@ const ServicesPage = () => {
           </p>
         </div>
       </section>
+
+      {/* ==================== LOCATION BANNER ==================== */}
+      {!isLoading && schedules.length > 0 && (
+        <div className="section-container pt-6 pb-2">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 text-center">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-brand-red" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+              </svg>
+              <span className="text-white font-medium">{schedules.find(s => isThisWeek(s))?.location || schedules[0]?.location}</span>
+              <span className="text-gray-500">this week</span>
+            </div>
+
+            {schedules.length > 1 && (
+              <>
+                <span className="hidden sm:inline text-gray-600">&bull;</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-gray-400">{schedules.find(s => !isThisWeek(s))?.location || schedules[1]?.location}</span>
+                  <span className="text-gray-500">next week</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ==================== SERVICES SECTION ==================== */}
       <section className="py-20 md:py-28 bg-brand-dark">
@@ -248,10 +333,10 @@ const ServicesPage = () => {
           {/* Services Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {currentServices.map((service) => (
-              <Link
+              <div
                 key={service.id}
-                to={`/book?service=${service.id}`}
-                className={`relative bg-brand-surface border rounded-sm p-6 transition-all duration-300
+                onClick={() => handleServiceSelect(service.id)}
+                className={`relative bg-brand-surface border rounded-sm p-6 cursor-pointer transition-all duration-300
                            hover:border-brand-red/50 hover:bg-brand-surface/80 group
                            ${service.isVip ? 'border-brand-red/30' : 'border-white/5'}`}
               >
@@ -262,25 +347,31 @@ const ServicesPage = () => {
                   </div>
                 )}
 
-                {/* Service Name */}
-                <h3 className="font-heading text-xl text-white mb-2 group-hover:text-brand-red transition-colors">
-                  {service.name}
-                </h3>
+                {/* Service Info */}
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="font-heading text-lg text-white group-hover:text-brand-red transition-colors">{service.name}</h3>
+                    <p className="text-gray-500 text-sm">{service.duration}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-heading text-2xl text-brand-red">&euro;{service.price}</p>
+                    <p className="text-gray-500 text-xs">&euro;{service.deposit} deposit</p>
+                  </div>
+                </div>
 
                 {/* Description */}
                 <p className="text-gray-500 text-sm mb-4">{service.description}</p>
 
-                {/* Price & Duration */}
-                <div className="flex items-center justify-between">
-                  <span className="font-heading text-2xl text-brand-red">{service.price}</span>
-                  <span className="text-gray-500 text-sm flex items-center gap-1">
+                {/* Book Now Arrow */}
+                <div className="flex justify-end">
+                  <span className="text-brand-red text-sm font-medium group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
+                    Book Now
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
-                    {service.duration}
                   </span>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         </div>
@@ -321,8 +412,8 @@ const ServicesPage = () => {
 
               {/* Price */}
               <div className="mb-6">
-                <span className="font-heading text-4xl md:text-5xl text-brand-red">€100</span>
-                <p className="text-gray-500 text-sm mt-1">€50 deposit • 1hr 15min</p>
+                <span className="font-heading text-4xl md:text-5xl text-brand-red">&euro;100</span>
+                <p className="text-gray-500 text-sm mt-1">&euro;50 deposit &middot; 1hr 15min</p>
               </div>
 
               {/* What's Included */}
@@ -349,14 +440,14 @@ const ServicesPage = () => {
               </div>
 
               {/* Book Button */}
-              <Link
-                to="/book?service=vip-trimmer"
+              <button
+                onClick={() => handleServiceSelect('vip-service')}
                 className="block w-full text-center bg-brand-red text-white py-4 rounded-sm
                            font-semibold uppercase tracking-wider transition-all duration-300
                            hover:bg-brand-red-dark"
               >
                 Book VIP Experience
-              </Link>
+              </button>
             </div>
 
             {/* CARE HOME SERVICES CARD */}
@@ -508,12 +599,15 @@ const ServicesPage = () => {
               <span className="text-brand-red">BOOK?</span>
             </h2>
             <p className="text-gray-400 text-lg mb-10 max-w-xl mx-auto">
-              Choose your service and pick a time that works for you.
+              Choose your service above and pick a time that works for you.
               We'll come to you, wherever you are.
             </p>
-            <Link to="/book" className="btn-primary text-lg px-12">
-              Book Now
-            </Link>
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+              className="btn-primary text-lg px-12"
+            >
+              Choose a Service
+            </button>
           </div>
         </div>
       </section>

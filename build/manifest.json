@@ -1,0 +1,15 @@
+{
+  "short_name": "MTB Mobile",
+  "name": "MTB Mobile - Barber Booking",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64",
+      "type": "image/x-icon"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#DC2626",
+  "background_color": "#000000"
+}

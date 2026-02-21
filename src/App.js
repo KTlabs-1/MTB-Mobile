@@ -9,6 +9,7 @@ import ServicesPage from './pages/ServicesPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import BookingPage from './pages/BookingPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import Loader from './components/Loader';
 import { useEffect } from 'react';
 
@@ -81,6 +82,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/forgot-password" element={<PlaceholderPage title="Forgot Password" />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

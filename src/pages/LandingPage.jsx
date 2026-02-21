@@ -1,10 +1,10 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import bannerImage from '../assets/images/Bannar1.jpg';
 import CoverageMap from '../components/CoverageMap';
 
 /**
  * Landing Page (Home)
- * 
+ *
  * Clean, minimal design following MTB branding.
  * Sections:
  * 1. Hero - Big headline + CTA
@@ -13,7 +13,20 @@ import CoverageMap from '../components/CoverageMap';
  * 4. Service Areas - Regions covered
  * 5. Final CTA - Booking prompt
  */
+const featuredServices = [
+  { id: 'adult-haircut', name: 'Adult Haircut', description: 'Classic cut tailored to your style', price: 30, duration: '30 min' },
+  { id: 'adult-haircut-beard', name: 'Haircut + Beard', description: 'Full cut with beard sculpting', price: 35, duration: '30 min' },
+  { id: 'teen-haircut', name: 'Teen Haircut', description: 'For ages 13-17', price: 25, duration: '30 min' },
+  { id: 'kids-haircut', name: 'Kids Haircut', description: 'For ages 12 and under', price: 20, duration: '30 min' },
+];
+
 const LandingPage = () => {
+  const navigate = useNavigate();
+
+  const handleServiceClick = (serviceId) => {
+    navigate(`/book?service=${serviceId}`);
+  };
+
   return (
     <main>
       {/* ==================== HERO SECTION ==================== */}
@@ -137,26 +150,20 @@ const LandingPage = () => {
             </p>
           </div>
 
-          {/* Services Grid - Placeholder prices, update with real ones */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Service Card Template */}
-            {[
-              { name: 'Adult Haircut', price: '€30', duration: '30 min', desc: 'Classic cut tailored to your style' },
-              { name: 'Haircut + Beard', price: '€35', duration: '45 min', desc: 'Full cut with beard sculpting' },
-              { name: 'Teen Haircut', price: '€25', duration: '30 min', desc: 'For ages 13-17' },
-              { name: 'Kids Haircut', price: '€20', duration: '25 min', desc: 'For ages 12 and under' },
-            ].map((service, index) => (
-              <div 
-                key={index}
-                className="bg-brand-surface border border-white/5 rounded-sm p-6
-                           hover:border-brand-red/30 transition-all duration-300 group"
+          {/* Services Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {featuredServices.map((service) => (
+              <div
+                key={service.id}
+                onClick={() => handleServiceClick(service.id)}
+                className="bg-brand-surface border border-white/10 rounded-sm p-6 cursor-pointer hover:border-brand-red/50 transition-all group"
               >
-                <h3 className="font-heading text-xl text-white mb-2 group-hover:text-brand-red transition-colors">
+                <h3 className="font-heading text-lg text-white mb-1 group-hover:text-brand-red transition-colors">
                   {service.name}
                 </h3>
-                <p className="text-gray-500 text-sm mb-4">{service.desc}</p>
-                <div className="flex items-end justify-between">
-                  <span className="font-heading text-3xl text-brand-red">{service.price}</span>
+                <p className="text-gray-500 text-sm mb-4">{service.description}</p>
+                <div className="flex items-center justify-between">
+                  <span className="font-heading text-2xl text-brand-red">€{service.price}</span>
                   <span className="text-gray-500 text-xs uppercase">{service.duration}</span>
                 </div>
               </div>
@@ -165,12 +172,11 @@ const LandingPage = () => {
 
           {/* View All Link */}
           <div className="text-center mt-10">
-            <Link 
-              to="/services" 
-              className="inline-flex items-center gap-2 text-brand-red hover:text-brand-red-light 
-                         transition-colors font-medium uppercase tracking-wider text-sm"
+            <Link
+              to="/services"
+              className="text-brand-red hover:underline inline-flex items-center gap-2"
             >
-              View All Services
+              VIEW ALL SERVICES
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
