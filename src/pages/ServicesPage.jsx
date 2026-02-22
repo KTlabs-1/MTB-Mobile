@@ -37,12 +37,6 @@ const ServicesPage = () => {
     fetchSchedules();
   }, []);
 
-  const formatWeekRange = (schedule) => {
-    const start = new Date(schedule.weekStart);
-    const end = new Date(schedule.weekEnd);
-    return `${start.toLocaleDateString('en-IE', { day: 'numeric', month: 'short' })} - ${end.toLocaleDateString('en-IE', { day: 'numeric', month: 'short' })}`;
-  };
-
   const isThisWeek = (schedule) => {
     const today = new Date();
     const start = new Date(schedule.weekStart);

@@ -2,6 +2,35 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import api from '../services/api';
 
+const allServices = [
+  // Barber
+  { id: 'adult-haircut', name: 'Adult Haircut (18+)', price: 30, duration: '30 min', deposit: 15, category: 'barber' },
+  { id: 'adult-haircut-beard', name: 'Adult Haircut + Beard Sculpt', price: 35, duration: '30 min', deposit: 15, category: 'barber' },
+  { id: 'teen-haircut', name: 'Teens Haircut (13-17)', price: 25, duration: '30 min', deposit: 15, category: 'barber' },
+  { id: 'teen-haircut-beard', name: 'Teens Haircut + Beard Sculpt', price: 30, duration: '30 min', deposit: 15, category: 'barber' },
+  { id: 'kids-haircut', name: 'Kids Haircut', price: 20, duration: '30 min', deposit: 15, category: 'barber' },
+  { id: 'shape-up', name: 'Shape Up', price: 15, duration: '15 min', deposit: 15, category: 'barber' },
+  { id: 'beard-sculpt', name: 'Beard Sculpting', price: 15, duration: '10 min', deposit: 15, category: 'barber' },
+  // Hairstylist
+  { id: 'barrel-twists', name: 'Barrel Twists', price: 50, duration: '2h', deposit: 15, category: 'hairstylist' },
+  { id: 'loc-retwist', name: 'Loc Retwist', price: 60, duration: '1h', deposit: 15, category: 'hairstylist' },
+  { id: 'loc-retwist-style', name: 'Loc Retwist & Style', price: 75, duration: '2h', deposit: 15, category: 'hairstylist' },
+  { id: 'starter-locs', name: 'Starter Locs (No Style)', price: 80, duration: '2h', deposit: 15, category: 'hairstylist' },
+  { id: 'starter-locs-style', name: 'Starter Locs + Style', price: 100, duration: '2h 30min', deposit: 50, category: 'hairstylist' },
+  { id: 'basic-twists', name: 'Basic Twists', price: 40, duration: '1h', deposit: 15, category: 'hairstylist' },
+  { id: 'off-white-twists', name: 'Off White Twists', price: 50, duration: '1h 30min', deposit: 15, category: 'hairstylist' },
+  { id: 'cornrows-to-twists', name: 'Cornrows into Twists/Braids', price: 50, duration: '1h 45min', deposit: 15, category: 'hairstylist' },
+  { id: 'plug-twists', name: 'Plug Twists', price: 45, duration: '1h 45min', deposit: 15, category: 'hairstylist' },
+  { id: 'basic-cornrows', name: 'Basic Cornrows', price: 30, duration: '30 min', deposit: 15, category: 'hairstylist' },
+  { id: 'stitch-cornrows', name: 'Stitch Cornrows', price: 35, duration: '45 min', deposit: 15, category: 'hairstylist' },
+  { id: 'design-cornrows', name: 'Minimum Design Cornrows', price: 40, duration: '45 min', deposit: 15, category: 'hairstylist' },
+  { id: 'premium-cornrows', name: 'Premium Cornrows', price: 50, duration: '1h', deposit: 15, category: 'hairstylist' },
+  { id: 'flat-twists', name: 'Flat Twists', price: 50, duration: '1h 45min', deposit: 15, category: 'hairstylist' },
+  // VIP
+  { id: 'vip-trimmer', name: 'VIP Trimmer', price: 100, duration: '1hr 15min', deposit: 50, category: 'vip' },
+  { id: 'vip-service', name: 'VIP Service', price: 100, duration: '1hr 15min', deposit: 50, category: 'vip' },
+];
+
 const BookingPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -35,36 +64,6 @@ const BookingPage = () => {
   const [bookingComplete, setBookingComplete] = useState(false);
   const [bookingRef, setBookingRef] = useState('');
 
-  // All services
-  const allServices = [
-    // Barber
-    { id: 'adult-haircut', name: 'Adult Haircut (18+)', price: 30, duration: '30 min', deposit: 15, category: 'barber' },
-    { id: 'adult-haircut-beard', name: 'Adult Haircut + Beard Sculpt', price: 35, duration: '30 min', deposit: 15, category: 'barber' },
-    { id: 'teen-haircut', name: 'Teens Haircut (13-17)', price: 25, duration: '30 min', deposit: 15, category: 'barber' },
-    { id: 'teen-haircut-beard', name: 'Teens Haircut + Beard Sculpt', price: 30, duration: '30 min', deposit: 15, category: 'barber' },
-    { id: 'kids-haircut', name: 'Kids Haircut', price: 20, duration: '30 min', deposit: 15, category: 'barber' },
-    { id: 'shape-up', name: 'Shape Up', price: 15, duration: '15 min', deposit: 15, category: 'barber' },
-    { id: 'beard-sculpt', name: 'Beard Sculpting', price: 15, duration: '10 min', deposit: 15, category: 'barber' },
-    // Hairstylist
-    { id: 'barrel-twists', name: 'Barrel Twists', price: 50, duration: '2h', deposit: 15, category: 'hairstylist' },
-    { id: 'loc-retwist', name: 'Loc Retwist', price: 60, duration: '1h', deposit: 15, category: 'hairstylist' },
-    { id: 'loc-retwist-style', name: 'Loc Retwist & Style', price: 75, duration: '2h', deposit: 15, category: 'hairstylist' },
-    { id: 'starter-locs', name: 'Starter Locs (No Style)', price: 80, duration: '2h', deposit: 15, category: 'hairstylist' },
-    { id: 'starter-locs-style', name: 'Starter Locs + Style', price: 100, duration: '2h 30min', deposit: 50, category: 'hairstylist' },
-    { id: 'basic-twists', name: 'Basic Twists', price: 40, duration: '1h', deposit: 15, category: 'hairstylist' },
-    { id: 'off-white-twists', name: 'Off White Twists', price: 50, duration: '1h 30min', deposit: 15, category: 'hairstylist' },
-    { id: 'cornrows-to-twists', name: 'Cornrows into Twists/Braids', price: 50, duration: '1h 45min', deposit: 15, category: 'hairstylist' },
-    { id: 'plug-twists', name: 'Plug Twists', price: 45, duration: '1h 45min', deposit: 15, category: 'hairstylist' },
-    { id: 'basic-cornrows', name: 'Basic Cornrows', price: 30, duration: '30 min', deposit: 15, category: 'hairstylist' },
-    { id: 'stitch-cornrows', name: 'Stitch Cornrows', price: 35, duration: '45 min', deposit: 15, category: 'hairstylist' },
-    { id: 'design-cornrows', name: 'Minimum Design Cornrows', price: 40, duration: '45 min', deposit: 15, category: 'hairstylist' },
-    { id: 'premium-cornrows', name: 'Premium Cornrows', price: 50, duration: '1h', deposit: 15, category: 'hairstylist' },
-    { id: 'flat-twists', name: 'Flat Twists', price: 50, duration: '1h 45min', deposit: 15, category: 'hairstylist' },
-    // VIP
-    { id: 'vip-trimmer', name: 'VIP Trimmer', price: 100, duration: '1hr 15min', deposit: 50, category: 'vip' },
-    { id: 'vip-service', name: 'VIP Service', price: 100, duration: '1hr 15min', deposit: 50, category: 'vip' },
-  ];
-
   // Get service from URL params
   useEffect(() => {
     const serviceId = searchParams.get('service');
@@ -82,39 +81,37 @@ const BookingPage = () => {
 
   // Fetch schedules on mount
   useEffect(() => {
+    const fetchSchedules = async () => {
+      try {
+        const result = await api.getAvailableWeeks();
+        if (result.success) {
+          setSchedules(result.schedules);
+        }
+      } catch (error) {
+        console.error('Error fetching schedules:', error);
+      } finally {
+        setIsLoadingSchedule(false);
+      }
+    };
     fetchSchedules();
   }, []);
 
   // Fetch available times when date changes
   useEffect(() => {
     if (selectedDate) {
+      const fetchAvailableTimes = async () => {
+        try {
+          const result = await api.getAvailableSlots(selectedDate.toISOString());
+          if (result.success) {
+            setUnavailableTimes(result.bookedTimes || []);
+          }
+        } catch (error) {
+          console.error('Error fetching times:', error);
+        }
+      };
       fetchAvailableTimes();
     }
   }, [selectedDate]);
-
-  const fetchSchedules = async () => {
-    try {
-      const result = await api.getAvailableWeeks();
-      if (result.success) {
-        setSchedules(result.schedules);
-      }
-    } catch (error) {
-      console.error('Error fetching schedules:', error);
-    } finally {
-      setIsLoadingSchedule(false);
-    }
-  };
-
-  const fetchAvailableTimes = async () => {
-    try {
-      const result = await api.getAvailableSlots(selectedDate.toISOString());
-      if (result.success) {
-        setUnavailableTimes(result.bookedTimes || []);
-      }
-    } catch (error) {
-      console.error('Error fetching times:', error);
-    }
-  };
 
   // Get dates for a schedule week
   const getWeekDates = (schedule) => {
