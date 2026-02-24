@@ -1,174 +1,152 @@
-const WeeklySchedule = require('../models/WeeklySchedule');
+const DailySchedule = require('../models/DailySchedule');
 const Booking = require('../models/Booking');
-const emailService = require('../services/emailService');
 
 const scheduleController = {
-  // Get current and upcoming schedules (public - for booking page)
-  async getAvailableWeeks(req, res) {
+  // Get upcoming 7 days of schedules (public)
+  async getAvailableSchedules(req, res) {
     try {
-      const today = new Date();
-      const thisWeekStart = WeeklySchedule.getWeekStart(today);
+      const schedules = await DailySchedule.getUpcomingSchedules();
 
-      const schedules = await WeeklySchedule.find({
-        weekStart: { $gte: thisWeekStart },
-        isActive: true
-      }).sort({ weekStart: 1 }).limit(4);
+      // Format for frontend
+      const formattedSchedules = schedules.map(schedule => ({
+        _id: schedule._id,
+        date: schedule.date,
+        location: schedule.location,
+        dayName: new Date(schedule.date).toLocaleDateString('en-IE', { weekday: 'short' }),
+        dayNumber: new Date(schedule.date).getDate(),
+        month: new Date(schedule.date).toLocaleDateString('en-IE', { month: 'short' })
+      }));
 
-      res.json({ success: true, schedules });
+      res.json({ success: true, schedules: formattedSchedules });
     } catch (error) {
-      console.error('Error getting available weeks:', error);
-      res.status(500).json({ success: false, message: 'Error getting schedules' });
+      console.error('Get schedules error:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch schedules' });
     }
   },
 
-  // Get schedule for a specific location (public)
-  async getScheduleByLocation(req, res) {
+  // Get schedule for specific date (public)
+  async getScheduleByDate(req, res) {
     try {
-      const { location } = req.params;
-      const today = new Date();
-      const thisWeekStart = WeeklySchedule.getWeekStart(today);
-
-      const schedule = await WeeklySchedule.findOne({
-        location: location,
-        weekStart: { $gte: thisWeekStart },
-        isActive: true
-      }).sort({ weekStart: 1 });
+      const { date } = req.params;
+      const schedule = await DailySchedule.getScheduleForDate(new Date(date));
 
       if (!schedule) {
-        return res.json({
-          success: true,
-          available: false,
-          message: `Not in ${location} this week or next week`,
-          requiresVIP: true
-        });
+        return res.json({ success: true, schedule: null });
       }
+
+      res.json({ success: true, schedule });
+    } catch (error) {
+      console.error('Get schedule by date error:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch schedule' });
+    }
+  },
+
+  // Get today's and tomorrow's location for display (public)
+  async getCurrentLocations(req, res) {
+    try {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const todaySchedule = await DailySchedule.getScheduleForDate(today);
+      const tomorrowSchedule = await DailySchedule.getScheduleForDate(tomorrow);
 
       res.json({
         success: true,
-        available: true,
-        schedule
+        today: todaySchedule ? {
+          location: todaySchedule.location,
+          date: todaySchedule.date
+        } : null,
+        tomorrow: tomorrowSchedule ? {
+          location: tomorrowSchedule.location,
+          date: tomorrowSchedule.date
+        } : null
       });
     } catch (error) {
-      console.error('Error getting schedule by location:', error);
-      res.status(500).json({ success: false, message: 'Error getting schedule' });
+      console.error('Get current locations error:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch locations' });
     }
   },
 
   // Admin: Get all schedules
   async getAllSchedules(req, res) {
     try {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      const schedules = await WeeklySchedule.find({
-        weekEnd: { $gte: today }
-      }).sort({ weekStart: 1 });
-
+      const schedules = await DailySchedule.find().sort({ date: 1 });
       res.json({ success: true, schedules });
     } catch (error) {
-      console.error('Error getting all schedules:', error);
-      res.status(500).json({ success: false, message: 'Error getting schedules' });
+      console.error('Get all schedules error:', error);
+      res.status(500).json({ success: false, message: 'Failed to fetch schedules' });
     }
   },
 
-  // Admin: Set weekly schedule
-  async setSchedule(req, res) {
+  // Admin: Set schedule for a specific date
+  async setDailySchedule(req, res) {
     try {
-      const { weekStart, location } = req.body;
+      const { date, location } = req.body;
 
-      const startDate = new Date(weekStart);
-      const weekStartDate = WeeklySchedule.getWeekStart(startDate);
-      const weekEndDate = WeeklySchedule.getWeekEnd(startDate);
-
-      // Check if schedule already exists for this week
-      let schedule = await WeeklySchedule.findOne({
-        weekStart: weekStartDate
-      });
-
-      if (schedule) {
-        const oldLocation = schedule.location;
-        schedule.location = location;
-        schedule.updatedAt = new Date();
-        await schedule.save();
-
-        let affectedBookings = 0;
-        // If location changed, notify affected customers
-        if (oldLocation !== location) {
-          affectedBookings = await scheduleController.notifyAffectedCustomers(
-            weekStartDate, weekEndDate, oldLocation, location
-          );
-        }
-
-        res.json({ success: true, schedule, updated: true, affectedBookings });
-      } else {
-        schedule = new WeeklySchedule({
-          weekStart: weekStartDate,
-          weekEnd: weekEndDate,
-          location,
-          createdBy: req.user?._id
-        });
-        await schedule.save();
-
-        res.json({ success: true, schedule, created: true });
+      if (!date || !location) {
+        return res.status(400).json({ success: false, message: 'Date and location are required' });
       }
+
+      const scheduleDate = new Date(date);
+      scheduleDate.setHours(0, 0, 0, 0);
+
+      // Upsert - update if exists, create if not
+      const schedule = await DailySchedule.findOneAndUpdate(
+        { date: scheduleDate },
+        { date: scheduleDate, location, isActive: true },
+        { upsert: true, new: true }
+      );
+
+      res.json({ success: true, schedule });
     } catch (error) {
-      console.error('Error setting schedule:', error);
-      res.status(500).json({ success: false, message: 'Error setting schedule' });
+      console.error('Set schedule error:', error);
+      res.status(500).json({ success: false, message: 'Failed to set schedule' });
     }
   },
 
-  // Admin: Delete schedule
+  // Admin: Set schedules for next 7 days at once
+  async setWeekSchedules(req, res) {
+    try {
+      const { schedules } = req.body;
+
+      if (!schedules || !Array.isArray(schedules)) {
+        return res.status(400).json({ success: false, message: 'Schedules array is required' });
+      }
+
+      const results = [];
+
+      for (const item of schedules) {
+        const scheduleDate = new Date(item.date);
+        scheduleDate.setHours(0, 0, 0, 0);
+
+        const schedule = await DailySchedule.findOneAndUpdate(
+          { date: scheduleDate },
+          { date: scheduleDate, location: item.location, isActive: true },
+          { upsert: true, new: true }
+        );
+
+        results.push(schedule);
+      }
+
+      res.json({ success: true, schedules: results });
+    } catch (error) {
+      console.error('Set week schedules error:', error);
+      res.status(500).json({ success: false, message: 'Failed to set schedules' });
+    }
+  },
+
+  // Admin: Delete a schedule
   async deleteSchedule(req, res) {
     try {
       const { id } = req.params;
-
-      const schedule = await WeeklySchedule.findById(id);
-      if (!schedule) {
-        return res.status(404).json({ success: false, message: 'Schedule not found' });
-      }
-
-      // Check for existing bookings
-      const bookings = await Booking.find({
-        date: { $gte: schedule.weekStart, $lte: schedule.weekEnd },
-        status: { $in: ['pending', 'confirmed'] }
-      });
-
-      if (bookings.length > 0) {
-        return res.status(400).json({
-          success: false,
-          message: `Cannot delete schedule. ${bookings.length} bookings exist for this week.`,
-          bookingsCount: bookings.length
-        });
-      }
-
-      await WeeklySchedule.findByIdAndDelete(id);
+      await DailySchedule.findByIdAndDelete(id);
       res.json({ success: true, message: 'Schedule deleted' });
     } catch (error) {
-      console.error('Error deleting schedule:', error);
-      res.status(500).json({ success: false, message: 'Error deleting schedule' });
-    }
-  },
-
-  // Helper: Notify customers when location changes
-  async notifyAffectedCustomers(weekStart, weekEnd, oldLocation, newLocation) {
-    try {
-      const affectedBookings = await Booking.find({
-        date: { $gte: weekStart, $lte: weekEnd },
-        status: { $in: ['pending', 'confirmed'] }
-      });
-
-      for (const booking of affectedBookings) {
-        booking.status = 'cancelled';
-        booking.cancellationReason = `Location changed from ${oldLocation} to ${newLocation}`;
-        await booking.save();
-
-        await emailService.sendLocationChangeNotification(booking, oldLocation, newLocation);
-      }
-
-      return affectedBookings.length;
-    } catch (error) {
-      console.error('Error notifying customers:', error);
-      return 0;
+      console.error('Delete schedule error:', error);
+      res.status(500).json({ success: false, message: 'Failed to delete schedule' });
     }
   }
 };

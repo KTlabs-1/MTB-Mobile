@@ -18,31 +18,26 @@ import bannerImage from '../assets/images/Bannar1.jpg';
 const ServicesPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('barber');
-  const [schedules, setSchedules] = useState([]);
+  const [todayLocation, setTodayLocation] = useState(null);
+  const [tomorrowLocation, setTomorrowLocation] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchSchedules = async () => {
+    const fetchLocations = async () => {
       try {
-        const result = await api.getAvailableWeeks();
+        const result = await api.getCurrentLocations();
         if (result.success) {
-          setSchedules(result.schedules);
+          setTodayLocation(result.today);
+          setTomorrowLocation(result.tomorrow);
         }
       } catch (error) {
-        console.error('Error fetching schedules:', error);
+        console.error('Error fetching locations:', error);
       } finally {
         setIsLoading(false);
       }
     };
-    fetchSchedules();
+    fetchLocations();
   }, []);
-
-  const isThisWeek = (schedule) => {
-    const today = new Date();
-    const start = new Date(schedule.weekStart);
-    const end = new Date(schedule.weekEnd);
-    return today >= start && today <= end;
-  };
 
   const handleServiceSelect = (serviceId) => {
     navigate(`/book?service=${serviceId}`);
@@ -263,25 +258,28 @@ const ServicesPage = () => {
       </section>
 
       {/* ==================== LOCATION BANNER ==================== */}
-      {!isLoading && schedules.length > 0 && (
+      {!isLoading && (todayLocation || tomorrowLocation) && (
         <div className="section-container pt-6 pb-2">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 text-center">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-brand-red" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-              </svg>
-              <span className="text-white font-medium">{schedules.find(s => isThisWeek(s))?.location || schedules[0]?.location}</span>
-              <span className="text-gray-500">this week</span>
-            </div>
+            {todayLocation && (
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-brand-red" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                <span className="text-white font-medium">{todayLocation.location}</span>
+                <span className="text-gray-500">today</span>
+              </div>
+            )}
 
-            {schedules.length > 1 && (
-              <>
-                <span className="hidden sm:inline text-gray-600">&bull;</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-400">{schedules.find(s => !isThisWeek(s))?.location || schedules[1]?.location}</span>
-                  <span className="text-gray-500">next week</span>
-                </div>
-              </>
+            {todayLocation && tomorrowLocation && (
+              <span className="hidden sm:inline text-gray-600">&bull;</span>
+            )}
+
+            {tomorrowLocation && (
+              <div className="flex items-center gap-2">
+                <span className="text-gray-400">{tomorrowLocation.location}</span>
+                <span className="text-gray-500">tomorrow</span>
+              </div>
             )}
           </div>
         </div>

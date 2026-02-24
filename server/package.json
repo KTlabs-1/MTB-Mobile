@@ -10,7 +10,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "create-admin": "node scripts/createAdmin.js",
-    "seed-schedule": "node scripts/seedSchedule.js"
+    "seed-schedule": "node scripts/seedSchedule.js",
+    "seed-daily": "node scripts/seedDailySchedule.js"
   },
   "keywords": [
     "booking",

@@ -31,6 +31,19 @@ const allServices = [
   { id: 'vip-service', name: 'VIP Service', price: 100, duration: '1hr 15min', deposit: 50, category: 'vip' },
 ];
 
+const timeSlots = [
+  { time: '08:00', label: '8:00 AM' },
+  { time: '09:00', label: '9:00 AM' },
+  { time: '10:00', label: '10:00 AM' },
+  { time: '11:00', label: '11:00 AM' },
+  { time: '12:00', label: '12:00 PM' },
+  { time: '13:00', label: '1:00 PM' },
+  { time: '14:00', label: '2:00 PM' },
+  { time: '15:00', label: '3:00 PM' },
+  { time: '16:00', label: '4:00 PM' },
+  { time: '17:00', label: '5:00 PM' },
+];
+
 const BookingPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -40,7 +53,7 @@ const BookingPage = () => {
 
   // Schedule data
   const [schedules, setSchedules] = useState([]);
-  const [isLoadingSchedule, setIsLoadingSchedule] = useState(true);
+  const [isLoadingSchedules, setIsLoadingSchedules] = useState(true);
 
   // Booking selections
   const [selectedDate, setSelectedDate] = useState(null);
@@ -82,15 +95,16 @@ const BookingPage = () => {
   // Fetch schedules on mount
   useEffect(() => {
     const fetchSchedules = async () => {
+      setIsLoadingSchedules(true);
       try {
-        const result = await api.getAvailableWeeks();
+        const result = await api.getAvailableSchedules();
         if (result.success) {
           setSchedules(result.schedules);
         }
       } catch (error) {
         console.error('Error fetching schedules:', error);
       } finally {
-        setIsLoadingSchedule(false);
+        setIsLoadingSchedules(false);
       }
     };
     fetchSchedules();
@@ -113,65 +127,6 @@ const BookingPage = () => {
     }
   }, [selectedDate]);
 
-  // Get dates for a schedule week
-  const getWeekDates = (schedule) => {
-    const dates = [];
-    const start = new Date(schedule.weekStart);
-    const end = new Date(schedule.weekEnd);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-      dates.push({
-        date: new Date(d),
-        isPast: new Date(d) < today,
-        isToday: new Date(d).toDateString() === today.toDateString()
-      });
-    }
-    return dates;
-  };
-
-  // Check if schedule is this week
-  const isThisWeek = (schedule) => {
-    const today = new Date();
-    const start = new Date(schedule.weekStart);
-    const end = new Date(schedule.weekEnd);
-    return today >= start && today <= end;
-  };
-
-  // Format date for display
-  const formatDateShort = (date) => {
-    return date.toLocaleDateString('en-IE', { day: 'numeric' });
-  };
-
-  const formatDayName = (date) => {
-    return date.toLocaleDateString('en-IE', { weekday: 'short' });
-  };
-
-  const formatWeekRange = (schedule) => {
-    const start = new Date(schedule.weekStart);
-    const end = new Date(schedule.weekEnd);
-    return `${start.toLocaleDateString('en-IE', { day: 'numeric', month: 'short' })} - ${end.toLocaleDateString('en-IE', { day: 'numeric', month: 'short' })}`;
-  };
-
-  // Handle date selection
-  const handleDateSelect = (date, location) => {
-    setSelectedDate(date);
-    setSelectedLocation(location);
-    setSelectedTime(null);
-  };
-
-  // Generate time slots
-  const generateTimeSlots = () => {
-    const slots = [];
-    for (let hour = 9; hour <= 20; hour++) {
-      slots.push(`${hour.toString().padStart(2, '0')}:00`);
-      if (hour < 20) {
-        slots.push(`${hour.toString().padStart(2, '0')}:30`);
-      }
-    }
-    return slots;
-  };
 
   // Handle booking submission
   const handleSubmitBooking = async () => {
@@ -394,7 +349,7 @@ const BookingPage = () => {
 
         {/* STEP 1: SELECT DATE */}
         {currentStep === 1 && (
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             {/* Selected Service Banner */}
             {selectedService && (
               <div className="bg-brand-surface border border-white/10 rounded-sm p-4 mb-8">
@@ -421,123 +376,72 @@ const BookingPage = () => {
             <h2 className="font-heading text-2xl md:text-3xl text-white mb-2 text-center">
               Select a <span className="text-brand-red">Date</span>
             </h2>
-            <p className="text-gray-400 text-center mb-8">Choose from our available locations</p>
+            <p className="text-gray-400 text-center mb-8">Choose from available days</p>
 
-            {isLoadingSchedule ? (
+            {isLoadingSchedules ? (
               <div className="text-center py-12">
-                <svg className="animate-spin h-8 w-8 text-brand-red mx-auto mb-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                </svg>
-                <p className="text-gray-400">Loading schedule...</p>
+                <div className="w-8 h-8 border-2 border-brand-red border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-400">Loading available dates...</p>
               </div>
-            ) : schedules.length === 0 ? (
-              <div className="bg-brand-surface border border-white/10 rounded-sm p-8 text-center">
-                <svg className="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-gray-400 mb-4">No schedule available yet</p>
-                <p className="text-gray-500 text-sm">Please check back soon or contact us for a VIP booking</p>
+            ) : schedules.length > 0 ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-8">
+                {schedules.map((schedule) => {
+                  const scheduleDate = new Date(schedule.date);
+                  const isSelected = selectedDate && selectedDate.toDateString() === scheduleDate.toDateString();
+                  const isPast = scheduleDate < new Date(new Date().setHours(0, 0, 0, 0));
+
+                  return (
+                    <button
+                      key={schedule._id}
+                      onClick={() => {
+                        if (!isPast) {
+                          setSelectedDate(scheduleDate);
+                          setSelectedLocation(schedule.location);
+                          setSelectedTime(null);
+                        }
+                      }}
+                      disabled={isPast}
+                      className={`p-4 rounded-sm border text-center transition-all ${
+                        isPast
+                          ? 'bg-brand-dark/50 border-white/5 opacity-50 cursor-not-allowed'
+                          : isSelected
+                          ? 'bg-brand-red border-brand-red'
+                          : 'bg-brand-surface border-white/10 hover:border-brand-red/50'
+                      }`}
+                    >
+                      <p className={`text-xs uppercase tracking-wider mb-1 ${isSelected ? 'text-white' : 'text-gray-500'}`}>
+                        {schedule.dayName}
+                      </p>
+                      <p className={`font-heading text-2xl mb-1 ${isSelected ? 'text-white' : 'text-white'}`}>
+                        {schedule.dayNumber}
+                      </p>
+                      <p className={`text-xs mb-2 ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
+                        {schedule.month}
+                      </p>
+                      <p className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-brand-red'}`}>
+                        {schedule.location}
+                      </p>
+                    </button>
+                  );
+                })}
               </div>
             ) : (
-              <div className="space-y-6">
-                {schedules.map((schedule, index) => (
-                  <div
-                    key={schedule._id || index}
-                    className="bg-brand-surface border border-white/10 rounded-sm overflow-hidden"
-                  >
-                    {/* Week Header */}
-                    <div className="bg-brand-dark px-6 py-4 border-b border-white/10">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-brand-red/20 rounded-full flex items-center justify-center">
-                            <svg className="w-5 h-5 text-brand-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                          </div>
-                          <div>
-                            <p className="text-white font-heading text-lg">{schedule.location}</p>
-                            <p className="text-gray-500 text-sm">{formatWeekRange(schedule)}</p>
-                          </div>
-                        </div>
-                        {isThisWeek(schedule) ? (
-                          <span className="px-3 py-1 bg-green-500/20 text-green-500 text-xs uppercase tracking-wider rounded-full">
-                            This Week
-                          </span>
-                        ) : (
-                          <span className="px-3 py-1 bg-blue-500/20 text-blue-500 text-xs uppercase tracking-wider rounded-full">
-                            Next Week
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Week Dates */}
-                    <div className="p-4 md:p-6">
-                      <div className="grid grid-cols-7 gap-1 md:gap-2">
-                        {getWeekDates(schedule).map((dayInfo, dayIndex) => (
-                          <button
-                            key={dayIndex}
-                            onClick={() => !dayInfo.isPast && handleDateSelect(dayInfo.date, schedule.location)}
-                            disabled={dayInfo.isPast}
-                            className={`p-1 md:p-3 rounded-sm text-center transition-all
-                              ${dayInfo.isPast
-                                ? 'opacity-30 cursor-not-allowed'
-                                : selectedDate?.toDateString() === dayInfo.date.toDateString()
-                                  ? 'bg-brand-red text-white'
-                                  : 'bg-brand-dark hover:bg-brand-red/20 border border-white/5'
-                              }`}
-                          >
-                            <p className={`text-[10px] md:text-xs mb-0.5 md:mb-1 ${
-                              selectedDate?.toDateString() === dayInfo.date.toDateString()
-                                ? 'text-white/80'
-                                : 'text-gray-500'
-                            }`}>
-                              {formatDayName(dayInfo.date)}
-                            </p>
-                            <p className={`font-heading text-sm md:text-lg ${
-                              selectedDate?.toDateString() === dayInfo.date.toDateString()
-                                ? 'text-white'
-                                : dayInfo.isPast
-                                  ? 'text-gray-600'
-                                  : 'text-white'
-                            }`}>
-                              {formatDateShort(dayInfo.date)}
-                            </p>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {/* VIP Option */}
-                <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-sm p-6">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                      <h3 className="font-heading text-lg text-yellow-500 mb-1">Not in your area?</h3>
-                      <p className="text-gray-400 text-sm">Book a VIP service and we'll come to you anywhere, anytime</p>
-                    </div>
-                    <Link
-                      to="/contact"
-                      className="px-6 py-3 bg-yellow-500 text-black font-medium rounded-sm hover:bg-yellow-400 transition-colors text-center"
-                    >
-                      Book VIP &mdash; &euro;100
-                    </Link>
-                  </div>
-                </div>
+              <div className="bg-brand-surface border border-white/10 rounded-sm p-8 text-center">
+                <svg className="w-12 h-12 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <p className="text-gray-400 mb-2">No schedule available yet</p>
+                <p className="text-gray-500 text-sm">Please check back soon or contact us for a booking</p>
               </div>
             )}
 
-            {/* Continue Button */}
             {selectedDate && (
-              <div className="flex justify-end mt-8">
+              <div className="flex justify-center">
                 <button
                   onClick={() => setCurrentStep(2)}
                   className="btn-primary px-8 py-3"
                 >
-                  Continue
+                  Continue to Select Time
                 </button>
               </div>
             )}
@@ -576,7 +480,7 @@ const BookingPage = () => {
 
             {/* Time Slots Grid */}
             <div className="grid grid-cols-3 md:grid-cols-4 gap-3 mb-8">
-              {generateTimeSlots().map((time) => {
+              {timeSlots.map(({ time, label }) => {
                 const isUnavailable = unavailableTimes.includes(time);
                 return (
                   <button
@@ -591,7 +495,7 @@ const BookingPage = () => {
                           : 'bg-brand-surface border border-white/10 text-white hover:border-brand-red/50'
                       }`}
                   >
-                    {time}
+                    {label}
                   </button>
                 );
               })}

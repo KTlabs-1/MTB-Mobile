@@ -125,31 +125,38 @@ export const api = {
   },
 
   /**
-   * Get available weeks/schedules
+   * Get available daily schedules (next 7 days)
    */
-  async getAvailableWeeks() {
+  async getAvailableSchedules() {
     try {
       const response = await fetch(`${API_URL}/schedule/available`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       return await response.json();
     } catch (error) {
-      console.error('API Error - getAvailableWeeks:', error);
-      throw error;
+      console.error('API Error - getAvailableSchedules:', error);
+      return { success: false, schedules: [] };
     }
   },
 
   /**
-   * Get schedule for a specific location
+   * Get current locations (today and tomorrow)
    */
-  async getScheduleByLocation(location) {
+  async getCurrentLocations() {
     try {
-      const response = await fetch(`${API_URL}/schedule/location/${location}`);
+      const response = await fetch(`${API_URL}/schedule/current`);
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       return await response.json();
     } catch (error) {
-      console.error('API Error - getScheduleByLocation:', error);
-      throw error;
+      console.error('API Error - getCurrentLocations:', error);
+      return { success: false, today: null, tomorrow: null };
     }
+  },
+
+  /**
+   * Get available weeks/schedules (backwards-compatible alias)
+   */
+  async getAvailableWeeks() {
+    return this.getAvailableSchedules();
   },
 
   /**
