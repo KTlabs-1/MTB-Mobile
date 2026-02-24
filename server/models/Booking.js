@@ -24,10 +24,17 @@ const bookingSchema = new mongoose.Schema({
   time: { type: String, required: true },
   location: {
     type: String,
-    enum: ['Dundalk', 'Drogheda', 'Dublin'],
+    enum: ['Dundalk', 'Drogheda', 'Dublin', 'Belfast'],
     default: null
   },
   isVIP: { type: Boolean, default: false },
+  isAfterHours: { type: Boolean, default: false },
+  afterHoursLocation: {
+    type: String,
+    enum: ['Dundalk', 'Drogheda', 'Dublin', 'Belfast', null],
+    default: null
+  },
+  afterHoursPrice: { type: Number, default: null },
   payment: {
     depositAmount: { type: Number, required: true },
     depositPaid: { type: Boolean, default: false },

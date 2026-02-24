@@ -8,7 +8,7 @@ const bookingController = {
    */
   async createBooking(req, res) {
     try {
-      const { customer, service, date, time } = req.body;
+      const { customer, service, date, time, location, isAfterHours, afterHoursLocation } = req.body;
 
       // Validate required fields
       if (!customer || !service || !date || !time) {
@@ -18,18 +18,40 @@ const bookingController = {
         });
       }
 
+      // After hours pricing (server-side verification)
+      const afterHoursPricing = {
+        'Dundalk':  { price: 80,  deposit: 40 },
+        'Drogheda': { price: 100, deposit: 50 },
+        'Dublin':   { price: 120, deposit: 60 },
+        'Belfast':  { price: 150, deposit: 75 },
+      };
+
+      let finalPrice, finalDeposit;
+      if (isAfterHours && afterHoursLocation && afterHoursPricing[afterHoursLocation]) {
+        const pricing = afterHoursPricing[afterHoursLocation];
+        finalPrice = pricing.price;
+        finalDeposit = pricing.deposit;
+      } else {
+        finalPrice = service.price;
+        finalDeposit = service.deposit;
+      }
+
       // Generate unique booking reference
       const bookingRef = Booking.generateBookingRef();
-      const depositAmount = service.deposit;
-      const remainingAmount = service.price - depositAmount;
+      const depositAmount = finalDeposit;
+      const remainingAmount = finalPrice - finalDeposit;
 
       // Create booking
       const booking = new Booking({
         bookingRef,
         customer,
-        service,
+        service: { ...service, price: finalPrice, deposit: finalDeposit },
         date: new Date(date),
         time,
+        location: location || null,
+        isAfterHours: isAfterHours || false,
+        afterHoursLocation: isAfterHours ? afterHoursLocation : null,
+        afterHoursPrice: isAfterHours ? finalPrice : null,
         payment: {
           depositAmount,
           depositPaid: true,
