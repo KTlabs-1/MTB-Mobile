@@ -158,12 +158,16 @@ const BookingPage = () => {
     return eircodeRegex.test(cleaned);
   };
 
-  const formatEircode = (eircode) => {
-    const cleaned = eircode.replace(/\s/g, '').toUpperCase();
-    if (cleaned.length >= 3) {
-      return cleaned.slice(0, 3) + ' ' + cleaned.slice(3);
+  const formatEircode = (value, previousValue = '') => {
+    // If deleting, don't reformat - just uppercase
+    if (value.length < previousValue.length) {
+      return value.toUpperCase();
     }
-    return cleaned.toUpperCase();
+    const cleaned = value.replace(/\s/g, '').toUpperCase();
+    if (cleaned.length > 3) {
+      return cleaned.slice(0, 3) + ' ' + cleaned.slice(3, 7);
+    }
+    return cleaned;
   };
 
   const validateEmail = (email) => {
@@ -225,7 +229,7 @@ const BookingPage = () => {
     let formattedValue = value;
 
     if (name === 'eircode') {
-      formattedValue = formatEircode(value);
+      formattedValue = formatEircode(value, customerDetails.eircode);
     }
 
     setCustomerDetails(prev => ({
