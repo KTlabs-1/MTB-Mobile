@@ -7,6 +7,17 @@ const bookingController = {
    * POST /api/bookings
    */
   async createBooking(req, res) {
+    const validateEircode = (eircode) => {
+      const cleaned = eircode.replace(/\s/g, '').toUpperCase();
+      const eircodeRegex = /^[A-Z]\d[0-9A-Z][0-9A-Z]{4}$/;
+      return eircodeRegex.test(cleaned);
+    };
+
+    const validateEmail = (email) => {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    };
+
     try {
       const { customer, service, date, time, location, isAfterHours, afterHoursLocation } = req.body;
 
@@ -16,6 +27,14 @@ const bookingController = {
           success: false,
           message: 'Missing required fields'
         });
+      }
+
+      if (!validateEmail(customer.email)) {
+        return res.status(400).json({ success: false, message: 'Invalid email address' });
+      }
+
+      if (!customer.eircode || !validateEircode(customer.eircode)) {
+        return res.status(400).json({ success: false, message: 'Invalid Eircode format' });
       }
 
       // After hours pricing (server-side verification)
@@ -44,7 +63,10 @@ const bookingController = {
       // Create booking
       const booking = new Booking({
         bookingRef,
-        customer,
+        customer: {
+          ...customer,
+          eircode: customer.eircode.replace(/\s/g, '').toUpperCase()
+        },
         service: { ...service, price: finalPrice, deposit: finalDeposit },
         date: new Date(date),
         time,
