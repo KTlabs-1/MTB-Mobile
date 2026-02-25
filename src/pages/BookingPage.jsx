@@ -313,6 +313,27 @@ const BookingPage = () => {
 
   const getRemainingBalance = () => getCurrentPrice() - getCurrentDeposit();
 
+  // Check if a time slot has passed (for today only, with 30-min buffer)
+  const isTimePassed = (slotTime, date) => {
+    if (!date) return false;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const bookingDate = new Date(date);
+    bookingDate.setHours(0, 0, 0, 0);
+    if (bookingDate.getTime() !== today.getTime()) return false;
+    const [hours, minutes] = slotTime.split(':').map(Number);
+    const slotDateTime = new Date();
+    slotDateTime.setHours(hours, minutes, 0, 0);
+    const bufferTime = new Date(Date.now() + 30 * 60 * 1000);
+    return slotDateTime <= bufferTime;
+  };
+
+  // Check if a date still has at least one available slot
+  const hasAvailableSlots = (date, isAfterHoursMode = false) => {
+    const slots = isAfterHoursMode ? afterHoursTimeSlots : timeSlots;
+    return slots.some(slot => !isTimePassed(slot.time, date));
+  };
+
   // Progress steps
   const steps = isAfterHours
     ? [
@@ -537,22 +558,25 @@ const BookingPage = () => {
                   const scheduleDate = new Date(schedule.date);
                   const isSelected = selectedDate && selectedDate.toDateString() === scheduleDate.toDateString();
                   const isPast = scheduleDate < new Date(new Date().setHours(0, 0, 0, 0));
+                  const noSlotsLeft = !isPast && !hasAvailableSlots(scheduleDate, false);
+                  const isDisabled = isPast || noSlotsLeft;
 
                   return (
                     <button
                       key={schedule._id}
                       onClick={() => {
-                        if (!isPast) {
+                        if (!isDisabled) {
                           setSelectedDate(scheduleDate);
                           setSelectedLocation(schedule.location);
                           setSelectedTime(null);
                           setIsAfterHours(false);
                           setAfterHoursDate(null);
+                          setAfterHoursLocation(null);
                         }
                       }}
-                      disabled={isPast}
+                      disabled={isDisabled}
                       className={`p-4 rounded-sm border text-center transition-all ${
-                        isPast
+                        isDisabled
                           ? 'bg-brand-dark/50 border-white/5 opacity-50 cursor-not-allowed'
                           : isSelected
                           ? 'bg-brand-red border-brand-red'
@@ -562,7 +586,7 @@ const BookingPage = () => {
                       <p className={`text-xs uppercase tracking-wider mb-1 ${isSelected ? 'text-white' : 'text-gray-500'}`}>
                         {schedule.dayName}
                       </p>
-                      <p className={`font-heading text-2xl mb-1 ${isSelected ? 'text-white' : 'text-white'}`}>
+                      <p className={`font-heading text-2xl mb-1 text-white`}>
                         {schedule.dayNumber}
                       </p>
                       <p className={`text-xs mb-2 ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
@@ -571,6 +595,9 @@ const BookingPage = () => {
                       <p className={`text-xs font-medium ${isSelected ? 'text-white' : 'text-brand-red'}`}>
                         {schedule.location}
                       </p>
+                      {noSlotsLeft && (
+                        <p className="text-xs text-gray-500 mt-1">Fully booked</p>
+                      )}
                     </button>
                   );
                 })}
@@ -623,12 +650,16 @@ const BookingPage = () => {
                     date.setDate(date.getDate() + i);
                     date.setHours(0, 0, 0, 0);
                     const isSelected = afterHoursDate && afterHoursDate.toDateString() === date.toDateString();
+                    const noSlotsLeft = !hasAvailableSlots(date, true);
                     return (
                       <button
                         key={i}
-                        onClick={() => setAfterHoursDate(new Date(date))}
+                        onClick={() => !noSlotsLeft && setAfterHoursDate(new Date(date))}
+                        disabled={noSlotsLeft}
                         className={`p-4 rounded-sm border text-center transition-all ${
-                          isSelected
+                          noSlotsLeft
+                            ? 'bg-brand-dark/50 border-white/5 opacity-50 cursor-not-allowed'
+                            : isSelected
                             ? 'bg-brand-red border-brand-red'
                             : 'bg-brand-surface border-white/10 hover:border-brand-red/50'
                         }`}
@@ -642,6 +673,9 @@ const BookingPage = () => {
                         <p className={`text-xs ${isSelected ? 'text-white/80' : 'text-gray-500'}`}>
                           {date.toLocaleDateString('en-IE', { month: 'short' })}
                         </p>
+                        {noSlotsLeft && (
+                          <p className="text-xs text-gray-500 mt-1">No slots left</p>
+                        )}
                       </button>
                     );
                   })}
@@ -764,21 +798,25 @@ const BookingPage = () => {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-8">
               {(isAfterHours ? afterHoursTimeSlots : timeSlots).map((slot) => {
                 const isBooked = unavailableTimes.includes(slot.time);
+                const isPast = isTimePassed(slot.time, isAfterHours ? afterHoursDate : selectedDate);
+                const isUnavailable = isBooked || isPast;
                 const isSelected = selectedTime === slot.time;
                 return (
                   <button
                     key={slot.time}
-                    onClick={() => !isBooked && setSelectedTime(slot.time)}
-                    disabled={isBooked}
+                    onClick={() => !isUnavailable && setSelectedTime(slot.time)}
+                    disabled={isUnavailable}
                     className={`p-4 rounded-sm border text-center transition-all ${
-                      isBooked
+                      isUnavailable
                         ? 'bg-brand-dark/50 border-white/5 opacity-50 cursor-not-allowed line-through'
                         : isSelected
                         ? 'bg-brand-red border-brand-red'
                         : 'bg-brand-surface border-white/10 hover:border-brand-red/50'
                     }`}
                   >
-                    <p className="font-medium text-white">{slot.label}</p>
+                    <p className={`font-medium ${isSelected ? 'text-white' : isUnavailable ? 'text-gray-600' : 'text-white'}`}>
+                      {slot.label}
+                    </p>
                   </button>
                 );
               })}

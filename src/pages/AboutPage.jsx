@@ -1,5 +1,10 @@
 import { Link } from 'react-router-dom';
 import aboutImage from '../assets/images/About.jpg';
+import img1 from '../assets/images/IMG1.JPG';
+import video1 from '../assets/Videos/IMG_3046.mp4';
+import video2 from '../assets/Videos/IMG_5675.mp4';
+import video3 from '../assets/Videos/IMG_6603.mp4';
+import HoverVideo from '../components/HoverVideo';
 
 /**
  * About Page
@@ -53,8 +58,15 @@ const AboutPage = () => {
     }
   ];
 
-  // Portfolio images (placeholders)
-  const portfolioImages = [1, 2, 3, 4, 5, 6];
+  // Portfolio gallery items
+  const galleryItems = [
+    { type: 'image', src: img1 },
+    { type: 'video', src: video1 },
+    { type: 'video', src: video2 },
+    { type: 'video', src: video3 },
+    { type: 'image', src: aboutImage },
+    { type: 'image', src: aboutImage },
+  ];
 
   return (
     <main>
@@ -195,19 +207,23 @@ const AboutPage = () => {
 
           {/* Portfolio Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-5xl mx-auto">
-            {portfolioImages.map((_, index) => (
+            {galleryItems.map((item, index) => (
               <div
                 key={index}
                 className="relative aspect-square overflow-hidden rounded-sm group cursor-pointer"
               >
-                <div
-                  className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500
-                             group-hover:scale-105"
-                  style={{ backgroundImage: `url(${aboutImage})` }}
-                />
+                {item.type === 'video' ? (
+                  <HoverVideo videoSrc={item.src} />
+                ) : (
+                  <div
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-500
+                               group-hover:scale-105"
+                    style={{ backgroundImage: `url(${item.src})` }}
+                  />
+                )}
                 {/* Border on hover */}
                 <div className="absolute inset-0 border-2 border-transparent group-hover:border-brand-red
-                                transition-all duration-300 rounded-sm" />
+                                transition-all duration-300 rounded-sm pointer-events-none" />
               </div>
             ))}
           </div>
