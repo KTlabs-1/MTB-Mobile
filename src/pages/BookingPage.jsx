@@ -176,7 +176,7 @@ const BookingPage = () => {
   };
 
   const validatePhone = (phone) => {
-    const cleaned = phone.replace(/[\s\-\(\)]/g, '');
+    const cleaned = phone.replace(/[\s\-()]/g, '');
     const phoneRegex = /^(\+353|0)[1-9]\d{7,9}$/;
     return phoneRegex.test(cleaned);
   };
