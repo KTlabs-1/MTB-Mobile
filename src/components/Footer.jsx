@@ -31,11 +31,11 @@ const Footer = () => {
             <div className="flex items-center mb-4">
               <span className="text-white font-extrabold text-2xl tracking-tight">MTB<span className="text-brand-red">CUTZ</span></span>
             </div>
-            <p className="text-gray-400 text-sm leading-relaxed mb-4">
-              Premium mobile barbering services across Ireland. 
+            <p className="text-gray-300 text-sm leading-relaxed mb-4">
+              Premium mobile barbering services across Ireland.
               We bring the fresh cuts to your door.
             </p>
-            <p className="text-gray-500 text-xs uppercase tracking-wider">
+            <p className="text-gray-400 text-xs uppercase tracking-wider">
               Part of the MTB Cutz Family
             </p>
           </div>
@@ -50,7 +50,7 @@ const Footer = () => {
                 <li key={link.name}>
                   <Link
                     to={link.path}
-                    className="text-gray-400 hover:text-brand-red transition-colors duration-200 text-sm"
+                    className="text-gray-300 hover:text-brand-red transition-colors duration-200 text-sm"
                   >
                     {link.name}
                   </Link>
@@ -64,7 +64,7 @@ const Footer = () => {
             <h4 className="font-heading text-xl text-white tracking-wider mb-4">
               Get In Touch
             </h4>
-            <div className="space-y-3 text-sm text-gray-400">
+            <div className="space-y-3 text-sm text-gray-300">
               {/* Email - placeholder, update with real email */}
               <p className="flex items-center gap-2">
                 <svg className="w-4 h-4 text-brand-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +92,7 @@ const Footer = () => {
                   href="https://www.instagram.com/the_hoodbarber1/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-400 hover:text-brand-red transition-colors duration-200"
+                  className="text-gray-300 hover:text-brand-red transition-colors duration-200"
                   aria-label="Instagram"
                 >
                   <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -108,7 +108,7 @@ const Footer = () => {
         {/* Copyright Bar */}
         <div className="mt-12 pt-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-center items-center gap-4">
-            <p className="text-gray-500 text-xs">
+            <p className="text-gray-400 text-xs">
               © {currentYear} The Hood Barber. All rights reserved.
             </p>
           </div>

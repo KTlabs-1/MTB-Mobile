@@ -103,3 +103,49 @@
   62.5%, 75% { rotate: 810deg; }
   87.5%, 100% { rotate: 1080deg; }
 }
+
+/* Mobile Text Readability Improvements */
+@media (max-width: 768px) {
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  p, span, label, a {
+    font-weight: 450;
+  }
+
+  .text-gray-400 {
+    color: #a1a1aa !important;
+  }
+
+  .text-gray-500 {
+    color: #a1a1aa !important;
+  }
+
+  .text-sm {
+    font-size: 0.9rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .text-xs {
+    font-size: 0.8rem !important;
+    line-height: 1.4 !important;
+  }
+
+  label {
+    color: #d4d4d8 !important;
+  }
+
+  .font-heading {
+    font-weight: 700;
+  }
+
+  button, .btn-primary, .btn-secondary {
+    font-weight: 600;
+  }
+
+  .text-gray-400, .text-gray-500 {
+    letter-spacing: 0.01em;
+  }
+}

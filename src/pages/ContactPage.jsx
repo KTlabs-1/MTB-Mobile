@@ -308,7 +308,7 @@ const ContactPage = () => {
                   </a>
                 </div>
 
-                <p className="text-gray-500 text-sm text-center mt-6">Quick replies, usually within minutes</p>
+                <p className="text-gray-400 text-sm text-center mt-6">Quick replies, usually within minutes</p>
               </div>
             </div>
 
@@ -336,7 +336,7 @@ const ContactPage = () => {
                 <h3 className="font-heading text-lg text-white mb-2">
                   {faq.question}
                 </h3>
-                <p className="text-gray-400 text-sm leading-relaxed">
+                <p className="text-gray-300 text-sm leading-relaxed">
                   {faq.answer}
                 </p>
               </div>
@@ -375,7 +375,7 @@ const ContactPage = () => {
                     <div className="text-brand-red mb-2">
                       {info.icon}
                     </div>
-                    <p className="text-gray-500 text-xs uppercase tracking-wider mb-1">
+                    <p className="text-gray-400 text-xs uppercase tracking-wider mb-1">
                       {info.label}
                     </p>
                     <p className="font-heading text-xl text-white">
@@ -422,7 +422,7 @@ const ContactPage = () => {
       <section className="py-12 bg-brand-dark">
         <div className="section-container">
           <div className="text-center">
-            <p className="text-gray-500 text-sm mb-2">
+            <p className="text-gray-400 text-sm mb-2">
               Part of Ireland's fastest growing multicultural barber brand
             </p>
             <a

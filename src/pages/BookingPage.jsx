@@ -42,6 +42,7 @@ const timeSlots = [
   { time: '15:00', label: '3:00 PM' },
   { time: '16:00', label: '4:00 PM' },
   { time: '17:00', label: '5:00 PM' },
+  { time: '18:00', label: '6:00 PM' },
 ];
 
 const afterHoursLocations = [
@@ -937,7 +938,7 @@ const BookingPage = () => {
                   {formErrors.eircode && formTouched.eircode && (
                     <p className="text-red-500 text-xs mt-1">{formErrors.eircode}</p>
                   )}
-                  <p className="text-gray-500 text-xs mt-1">Irish postcode (e.g., D02 X285)</p>
+                  <p className="text-gray-400 text-xs mt-1">Irish postcode (e.g., D02 X285)</p>
                 </div>
 
                 {/* Address */}
@@ -1043,7 +1044,7 @@ const BookingPage = () => {
                   {isSubmitting ? 'Processing...' : `Pay €${getCurrentDeposit()} Deposit`}
                 </button>
 
-                <p className="text-gray-500 text-xs text-center mt-3">
+                <p className="text-gray-400 text-xs text-center mt-3">
                   Secure payment powered by Stripe
                 </p>
               </div>

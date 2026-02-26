@@ -267,7 +267,7 @@ const ServicesPage = () => {
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
                 <span className="text-white font-medium">{todayLocation.location}</span>
-                <span className="text-gray-500">today</span>
+                <span className="text-gray-400">today</span>
               </div>
             )}
 
@@ -278,7 +278,7 @@ const ServicesPage = () => {
             {tomorrowLocation && (
               <div className="flex items-center gap-2">
                 <span className="text-gray-400">{tomorrowLocation.location}</span>
-                <span className="text-gray-500">tomorrow</span>
+                <span className="text-gray-400">tomorrow</span>
               </div>
             )}
           </div>
@@ -343,16 +343,16 @@ const ServicesPage = () => {
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="font-heading text-lg text-white group-hover:text-brand-red transition-colors">{service.name}</h3>
-                    <p className="text-gray-500 text-sm">{service.duration}</p>
+                    <p className="text-gray-400 text-sm">{service.duration}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-heading text-2xl text-brand-red">&euro;{service.price}</p>
-                    <p className="text-gray-500 text-xs">&euro;{service.deposit} deposit</p>
+                    <p className="text-gray-400 text-xs">&euro;{service.deposit} deposit</p>
                   </div>
                 </div>
 
                 {/* Description */}
-                <p className="text-gray-500 text-sm mb-4">{service.description}</p>
+                <p className="text-gray-400 text-sm mb-4">{service.description}</p>
 
                 {/* Book Now Arrow */}
                 <div className="flex justify-end">
@@ -405,7 +405,7 @@ const ServicesPage = () => {
               {/* Price */}
               <div className="mb-6">
                 <span className="font-heading text-4xl md:text-5xl text-brand-red">&euro;100</span>
-                <p className="text-gray-500 text-sm mt-1">&euro;50 deposit &middot; 1hr 15min</p>
+                <p className="text-gray-400 text-sm mt-1">&euro;50 deposit &middot; 1hr 15min</p>
               </div>
 
               {/* What's Included */}
@@ -464,7 +464,7 @@ const ServicesPage = () => {
               {/* Price */}
               <div className="mb-6">
                 <span className="font-heading text-4xl md:text-5xl text-brand-red">Custom Pricing</span>
-                <p className="text-gray-500 text-sm mt-1">Tailored to your needs</p>
+                <p className="text-gray-400 text-sm mt-1">Tailored to your needs</p>
               </div>
 
               {/* What's Included */}
