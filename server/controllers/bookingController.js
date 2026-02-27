@@ -19,7 +19,7 @@ const bookingController = {
     };
 
     try {
-      const { customer, service, date, time, location, isAfterHours, afterHoursLocation } = req.body;
+      const { customer, service, date, time, location, isAfterHours, afterHoursLocation, paymentIntentId } = req.body;
 
       // Validate required fields
       if (!customer || !service || !date || !time) {
@@ -77,7 +77,8 @@ const bookingController = {
         payment: {
           depositAmount,
           depositPaid: true,
-          remainingAmount
+          remainingAmount,
+          paymentIntentId: paymentIntentId || null
         },
         status: 'confirmed'
       });

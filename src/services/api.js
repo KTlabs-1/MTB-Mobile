@@ -160,6 +160,59 @@ export const api = {
   },
 
   /**
+   * Get Stripe publishable key from backend
+   */
+  async getStripeConfig() {
+    try {
+      const response = await fetch(`${API_URL}/payment/config`);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('API Error - getStripeConfig:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Create a Stripe PaymentIntent for a deposit
+   * @param {number} amount - Deposit amount in euros
+   * @param {Object} bookingDetails - Customer and service info for metadata
+   */
+  async createPaymentIntent(amount, bookingDetails) {
+    try {
+      const response = await fetch(`${API_URL}/payment/create-intent`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, bookingDetails }),
+      });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('API Error - createPaymentIntent:', error);
+      throw error;
+    }
+  },
+
+  /**
+   * Verify a PaymentIntent succeeded
+   * @param {string} paymentIntentId - Stripe PaymentIntent ID
+   */
+  async confirmPayment(paymentIntentId) {
+    try {
+      const response = await fetch(`${API_URL}/payment/confirm`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentIntentId }),
+      });
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      return await response.json();
+    } catch (error) {
+      console.error('API Error - confirmPayment:', error);
+      throw error;
+    }
+  },
+
+  /**
    * Health check endpoint
    * @returns {Promise<Object>} API health status
    */

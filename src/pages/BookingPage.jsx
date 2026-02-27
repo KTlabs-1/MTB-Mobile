@@ -1,6 +1,131 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardNumberElement, CardExpiryElement, CardCvcElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import api from '../services/api';
+
+/**
+ * PaymentForm - Separate Stripe card fields + confirm button.
+ * Must be rendered inside an <Elements> provider.
+ */
+const PaymentForm = ({ clientSecret, onSuccess, onError, amount, isProcessing, setIsProcessing }) => {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [cardholderName, setCardholderName] = useState('');
+  const [postalCode, setPostalCode] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!stripe || !elements) return;
+
+    if (!cardholderName.trim()) {
+      onError('Please enter the cardholder name');
+      return;
+    }
+
+    setIsProcessing(true);
+
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: elements.getElement(CardNumberElement),
+        billing_details: {
+          name: cardholderName,
+          address: {
+            postal_code: postalCode,
+          },
+        },
+      },
+    });
+
+    if (error) {
+      onError(error.message);
+      setIsProcessing(false);
+    } else if (paymentIntent.status === 'succeeded') {
+      onSuccess(paymentIntent.id);
+    }
+  };
+
+  const elementStyles = {
+    style: {
+      base: {
+        color: '#ffffff',
+        fontFamily: 'Urbanist, -apple-system, BlinkMacSystemFont, sans-serif',
+        fontSize: '16px',
+        fontWeight: '400',
+        '::placeholder': { color: '#6b7280' },
+      },
+      invalid: {
+        color: '#ef4444',
+        iconColor: '#ef4444',
+      },
+    },
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 mt-2">
+      {/* Cardholder Name */}
+      <div>
+        <label className="block text-gray-400 text-sm mb-2">Cardholder Name</label>
+        <input
+          type="text"
+          value={cardholderName}
+          onChange={(e) => setCardholderName(e.target.value)}
+          placeholder="Name on card"
+          className="w-full bg-brand-dark border border-white/10 rounded-sm p-3 text-white placeholder-gray-500 focus:border-brand-red focus:outline-none transition-colors"
+        />
+      </div>
+
+      {/* Card Number */}
+      <div>
+        <label className="block text-gray-400 text-sm mb-2">Card Number</label>
+        <div className="bg-brand-dark border border-white/10 rounded-sm p-3 focus-within:border-brand-red transition-colors">
+          <CardNumberElement options={elementStyles} />
+        </div>
+      </div>
+
+      {/* Expiry and CVC Row */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-gray-400 text-sm mb-2">Expiry Date</label>
+          <div className="bg-brand-dark border border-white/10 rounded-sm p-3 focus-within:border-brand-red transition-colors">
+            <CardExpiryElement options={elementStyles} />
+          </div>
+        </div>
+        <div>
+          <label className="block text-gray-400 text-sm mb-2">CVC</label>
+          <div className="bg-brand-dark border border-white/10 rounded-sm p-3 focus-within:border-brand-red transition-colors">
+            <CardCvcElement options={elementStyles} />
+          </div>
+        </div>
+      </div>
+
+      {/* Postal Code */}
+      <div>
+        <label className="block text-gray-400 text-sm mb-2">Eircode / Postal Code</label>
+        <input
+          type="text"
+          value={postalCode}
+          onChange={(e) => setPostalCode(e.target.value)}
+          placeholder="D02 X285"
+          className="w-full bg-brand-dark border border-white/10 rounded-sm p-3 text-white placeholder-gray-500 focus:border-brand-red focus:outline-none transition-colors uppercase"
+        />
+      </div>
+
+      {/* Submit */}
+      <button
+        type="submit"
+        disabled={!stripe || isProcessing}
+        className={`w-full py-4 rounded-sm font-heading text-lg transition-all ${
+          !stripe || isProcessing
+            ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+            : 'bg-brand-red text-white hover:bg-red-700'
+        }`}
+      >
+        {isProcessing ? 'Processing...' : `Pay \u20ac${amount} Deposit`}
+      </button>
+    </form>
+  );
+};
 
 const allServices = [
   // Barber
@@ -101,6 +226,12 @@ const BookingPage = () => {
   const [bookingComplete, setBookingComplete] = useState(false);
   const [bookingRef, setBookingRef] = useState('');
 
+  // Stripe
+  const [stripePromise, setStripePromise] = useState(null);
+  const [clientSecret, setClientSecret] = useState(null);
+  const [paymentError, setPaymentError] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+
   // Get service from URL params
   useEffect(() => {
     const serviceId = searchParams.get('service');
@@ -132,6 +263,21 @@ const BookingPage = () => {
       }
     };
     fetchSchedules();
+  }, []);
+
+  // Load Stripe publishable key from backend
+  useEffect(() => {
+    const loadStripeConfig = async () => {
+      try {
+        const config = await api.getStripeConfig();
+        if (config.success) {
+          setStripePromise(loadStripe(config.publishableKey));
+        }
+      } catch (err) {
+        console.error('Stripe config error:', err);
+      }
+    };
+    loadStripeConfig();
   }, []);
 
   // Fetch available times when date changes
@@ -243,9 +389,15 @@ const BookingPage = () => {
     }
   };
 
-  // Handle booking submission
+  // Step 1: Validate form and create Stripe payment intent
   const handleSubmitBooking = async () => {
-    if (!validateForm()) {
+    console.log('handleSubmitBooking called');
+    console.log('Policy accepted:', policyAccepted);
+
+    const isValid = validateForm();
+    console.log('Form valid:', isValid);
+
+    if (!isValid) {
       setFormTouched({
         name: true,
         email: true,
@@ -257,7 +409,37 @@ const BookingPage = () => {
     }
 
     setIsSubmitting(true);
+    setPaymentError(null);
 
+    try {
+      console.log('Calling createPaymentIntent with deposit:', getCurrentDeposit());
+      const result = await api.createPaymentIntent(getCurrentDeposit(), {
+        customer: {
+          name: customerDetails.name,
+          email: customerDetails.email,
+        },
+        service: {
+          name: isAfterHours ? 'After Hours Service' : selectedService.name,
+        },
+      });
+
+      console.log('Payment intent result:', result);
+      if (result.success) {
+        setClientSecret(result.clientSecret);
+      } else {
+        setPaymentError('Unable to initialize payment. Please try again.');
+      }
+    } catch (error) {
+      console.error('Payment init error:', error);
+      setPaymentError('Unable to initialize payment. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Step 2: Called after Stripe payment succeeds — create the booking
+  const handlePaymentSuccess = async (paymentIntentId) => {
+    setIsSubmitting(true);
     try {
       const bookingDate = isAfterHours ? afterHoursDate : selectedDate;
       const bookingLocation = isAfterHours ? afterHoursLocation?.name : selectedLocation;
@@ -281,8 +463,9 @@ const BookingPage = () => {
         date: bookingDate.toISOString(),
         time: selectedTime,
         location: bookingLocation,
-        isAfterHours: isAfterHours,
+        isAfterHours,
         afterHoursLocation: afterHoursLocation?.name,
+        paymentIntentId,
       };
 
       const result = await api.createBooking(bookingData);
@@ -291,14 +474,18 @@ const BookingPage = () => {
         setBookingRef(result.booking.bookingRef);
         setBookingComplete(true);
       } else {
-        alert(result.message || 'Error creating booking. Please try again.');
+        setPaymentError(result.message || 'Booking creation failed. Please contact us.');
       }
     } catch (error) {
-      console.error('Booking error:', error);
-      alert('Error creating booking. Please try again.');
+      console.error('Booking creation error:', error);
+      setPaymentError('Booking creation failed. Please contact us.');
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handlePaymentError = (message) => {
+    setPaymentError(message);
   };
 
   // Pricing helpers
@@ -1031,22 +1218,51 @@ const BookingPage = () => {
                   </span>
                 </label>
 
-                {/* Pay Button */}
-                <button
-                  onClick={handleSubmitBooking}
-                  disabled={isSubmitting || !policyAccepted}
-                  className={`w-full py-4 rounded-sm font-heading text-lg transition-all mt-6 ${
-                    isSubmitting || !policyAccepted
-                      ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                      : 'bg-brand-red text-white hover:bg-red-700'
-                  }`}
-                >
-                  {isSubmitting ? 'Processing...' : `Pay €${getCurrentDeposit()} Deposit`}
-                </button>
-
-                <p className="text-gray-400 text-xs text-center mt-3">
-                  Secure payment powered by Stripe
-                </p>
+                {/* Payment UI — two-stage: intent first, then card form */}
+                {clientSecret && stripePromise ? (
+                  <div className="mt-6">
+                    <p className="text-gray-400 text-sm mb-3">Enter your card details to pay the deposit:</p>
+                    {paymentError && (
+                      <p className="text-red-500 text-sm mb-3">{paymentError}</p>
+                    )}
+                    <Elements stripe={stripePromise} options={{ clientSecret }}>
+                      <PaymentForm
+                        clientSecret={clientSecret}
+                        amount={getCurrentDeposit()}
+                        isProcessing={isProcessing}
+                        setIsProcessing={setIsProcessing}
+                        onSuccess={handlePaymentSuccess}
+                        onError={handlePaymentError}
+                      />
+                    </Elements>
+                    <button
+                      onClick={() => { setClientSecret(null); setPaymentError(null); }}
+                      className="w-full text-gray-400 hover:text-white text-sm mt-3 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleSubmitBooking}
+                      disabled={isSubmitting || !policyAccepted}
+                      className={`w-full py-4 rounded-sm font-heading text-lg transition-all mt-6 ${
+                        isSubmitting || !policyAccepted
+                          ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                          : 'bg-brand-red text-white hover:bg-red-700'
+                      }`}
+                    >
+                      {isSubmitting ? 'Processing...' : `Pay \u20ac${getCurrentDeposit()} Deposit`}
+                    </button>
+                    {paymentError && (
+                      <p className="text-red-500 text-sm mt-2 text-center">{paymentError}</p>
+                    )}
+                    <p className="text-gray-400 text-xs text-center mt-3">
+                      Secure payment powered by Stripe
+                    </p>
+                  </>
+                )}
               </div>
             </div>
 

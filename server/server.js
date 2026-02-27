@@ -65,12 +65,14 @@ const bookingRoutes = require('./routes/bookingRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const scheduleRoutes = require('./routes/scheduleRoutes');
 const contactRoutes = require('./routes/contactRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/schedule', scheduleRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/payment', paymentRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

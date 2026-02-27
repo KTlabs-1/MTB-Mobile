@@ -39,7 +39,8 @@ const bookingSchema = new mongoose.Schema({
   payment: {
     depositAmount: { type: Number, required: true },
     depositPaid: { type: Boolean, default: false },
-    remainingAmount: { type: Number, required: true }
+    remainingAmount: { type: Number, required: true },
+    paymentIntentId: { type: String, default: null }
   },
   status: {
     type: String,
