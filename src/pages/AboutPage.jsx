@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import aboutImage from '../assets/images/About.jpg';
 import img1 from '../assets/images/IMG1.JPG';
+import img2 from '../assets/images/IMG2.jpg';
+import img3 from '../assets/images/IMG3.jpg';
 import video1 from '../assets/Videos/IMG_3046.mp4';
 import video2 from '../assets/Videos/IMG_5675.mp4';
 import video3 from '../assets/Videos/IMG_6603.mp4';
@@ -64,8 +66,8 @@ const AboutPage = () => {
     { type: 'video', src: video1 },
     { type: 'video', src: video2 },
     { type: 'video', src: video3 },
-    { type: 'image', src: aboutImage },
-    { type: 'image', src: aboutImage },
+    { type: 'image', src: img2 },
+    { type: 'image', src: img3 },
   ];
 
   return (
@@ -124,7 +126,7 @@ const AboutPage = () => {
                   </svg>
                 </a>
                 <a
-                  href="https://tiktok.com/@mtbcutz"
+                  href="https://www.tiktok.com/@thehoodbarber1"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gray-400 hover:text-brand-red transition-colors"

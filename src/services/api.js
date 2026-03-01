@@ -74,27 +74,42 @@ export const api = {
   },
 
   /**
-   * Cancel a booking
-   * @param {string} bookingRef - Booking reference to cancel
+   * Cancel a booking (admin) — sends reason, processes Stripe refund
+   * @param {string} id - MongoDB _id of the booking
+   * @param {string} reason - Cancellation reason
    * @returns {Promise<Object>} Cancellation result
    */
-  async cancelBooking(bookingRef) {
+  async cancelBooking(id, reason) {
     try {
-      const response = await fetch(`${API_URL}/bookings/${bookingRef}/cancel`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      const response = await fetch(`${API_URL}/bookings/${id}/cancel`, {
+        method: 'PUT',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ reason }),
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
       return await response.json();
     } catch (error) {
       console.error('API Error - cancelBooking:', error);
-      throw error;
+      return { success: false, message: 'Failed to cancel booking' };
+    }
+  },
+
+  /**
+   * Customer self-cancel a booking (public, 24hr rule)
+   * @param {string} bookingReference - Booking reference (e.g. MTB-123456)
+   * @param {string} email - Customer email address
+   * @returns {Promise<Object>} Cancellation result
+   */
+  async customerCancelBooking(bookingReference, email) {
+    try {
+      const response = await fetch(`${API_URL}/bookings/cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingReference, email }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('API Error - customerCancelBooking:', error);
+      return { success: false, message: 'Failed to cancel booking' };
     }
   },
 
@@ -209,6 +224,123 @@ export const api = {
     } catch (error) {
       console.error('API Error - confirmPayment:', error);
       throw error;
+    }
+  },
+
+  /**
+   * Admin login
+   */
+  async adminLogin(email, password) {
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('API Error - adminLogin:', error);
+      return { success: false, message: 'Login failed' };
+    }
+  },
+
+  /**
+   * Helper to get auth headers for admin requests
+   */
+  getAuthHeaders() {
+    const token = localStorage.getItem('adminToken');
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    };
+  },
+
+  /**
+   * Set schedules for multiple days at once (admin)
+   * @param {Array} schedules - Array of { date, location } objects
+   */
+  async setWeekSchedules(schedules) {
+    try {
+      const response = await fetch(`${API_URL}/schedule/week`, {
+        method: 'POST',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ schedules }),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('API Error - setWeekSchedules:', error);
+      return { success: false, message: 'Failed to save schedules' };
+    }
+  },
+
+  /**
+   * Get all bookings for admin, filtered by upcoming/past/all (client-side date filter)
+   * @param {string} filter - 'upcoming' | 'past' | 'all'
+   */
+  async getAdminBookings(filter = 'all') {
+    try {
+      const response = await fetch(`${API_URL}/admin/bookings?limit=200`, {
+        headers: this.getAuthHeaders(),
+      });
+      const data = await response.json();
+      if (!data.success) return data;
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      let bookings = data.bookings || [];
+      if (filter === 'upcoming') {
+        bookings = bookings.filter(
+          (b) => new Date(b.date) >= today && b.status !== 'cancelled'
+        );
+      } else if (filter === 'past') {
+        bookings = bookings.filter(
+          (b) => new Date(b.date) < today || b.status === 'completed' || b.status === 'cancelled'
+        );
+      }
+
+      return { success: true, bookings };
+    } catch (error) {
+      console.error('API Error - getAdminBookings:', error);
+      return { success: false, bookings: [] };
+    }
+  },
+
+  /**
+   * Cancel a booking (admin)
+   * @param {string} bookingRef - Booking reference
+   */
+  async adminCancelBooking(bookingRef) {
+    try {
+      const response = await fetch(`${API_URL}/admin/bookings/${bookingRef}`, {
+        method: 'DELETE',
+        headers: this.getAuthHeaders(),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('API Error - adminCancelBooking:', error);
+      return { success: false, message: 'Failed to cancel booking' };
+    }
+  },
+
+  /**
+   * Update booking status (admin)
+   * @param {string} bookingRef - Booking reference
+   * @param {string} status - New status
+   */
+  async adminUpdateBookingStatus(bookingRef, status) {
+    try {
+      const response = await fetch(`${API_URL}/admin/bookings/${bookingRef}/status`, {
+        method: 'PUT',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ status }),
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('API Error - adminUpdateBookingStatus:', error);
+      return { success: false, message: 'Failed to update status' };
     }
   },
 

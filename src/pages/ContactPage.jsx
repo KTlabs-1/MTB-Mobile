@@ -281,7 +281,7 @@ const ContactPage = () => {
 
                   {/* TikTok */}
                   <a
-                    href="https://tiktok.com/@mtbcutz"
+                    href="https://www.tiktok.com/@thehoodbarber1"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex flex-col items-center text-center group"

@@ -22,19 +22,13 @@ const AdminDashboard = () => {
 
   // Check if user is admin
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem('adminUser');
     if (!storedUser) {
-      navigate('/signin');
+      navigate('/admin');
       return;
     }
 
-    const userData = JSON.parse(storedUser);
-    if (userData.role !== 'admin') {
-      navigate('/');
-      return;
-    }
-
-    setUser(userData);
+    setUser(JSON.parse(storedUser));
     fetchDashboardData();
   }, [navigate]);
 
@@ -78,9 +72,9 @@ const AdminDashboard = () => {
   }, [activeTab]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/signin');
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+    navigate('/admin');
   };
 
   const handleStatusChange = async (bookingRef, newStatus) => {
